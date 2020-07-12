@@ -2,17 +2,44 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
 
+// var loginInfo = {
+//   email: "shaghayegh.tavakoli@gmail.com",
+//   token: "token",
+//   email_state: false,
+//   token_state: false
+// }
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.props.loginInfo.email = "shaghayegh.tavakoli@gmail.com";
+    this.props.loginInfo.token = "shaghayegh.tavakoli@gmail.com";
+    
+
+  }
+  static onTokenChange() {
+    this.forceUpdate();
+  }
   // Call API to fetch User Email
   render() {
-    return (
-      <div>
-        <NavigationBar title="Étoile Email Manager" user="shaghayegh.tavakoli@gmail.com" />
-        <MainContainer />
-      </div>
-    )
+    if (this.props.loginInfo.token != "") {
+      return (
+        <div>
+          <NavigationBar title="Étoile Email Manager" user={this.props.loginInfo.email} />
+          <MainContainer />
+
+        </div>
+      )
+    } else {
+      return (
+        <div>
+          <NavigationBar title="Étoile Email Manager" user={this.props.loginInfo.email} />
+          <EmptyBox />
+        </div>
+      )
+    }
   }
+
 }
 
 class NavigationBar extends React.Component {
@@ -22,7 +49,6 @@ class NavigationBar extends React.Component {
         <img className="nav-logo" src="https://image.flaticon.com/icons/svg/262/262544.svg" width="36" height="36" />
         <dev className="navbar-brand">{this.props.title}</dev>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-
           <ul className="navbar-nav ml-auto">
             <li className="nav-item active">
               <a className="nav-link" >{this.props.user} <span className="sr-only">(current)</span></a>
@@ -317,20 +343,24 @@ class ComposeMail extends React.Component {
   handleLabelClick() {
     console.log('heeereee vhaniginf button')
     this.state.clicked = true
+    this.props.loginInfo.email = "yo ha ha ha";
+
+    //console.log('heeereee button', this.props.loginInfo)
+    
     this.forceUpdate();
   }
 
 
   render() {
     if (this.state.clicked) {
-      console.log('heeereee button')
+
       return (<div>this is going to work!!!</div>)
     } else {
-      console.log('heeereee nooottt button')
+//      console.log('heeereee nooottt button', this.props.loginInfo)
       return (
         <div className="row">
           <div className="col-12">
-            <div className="btn btn-info btn-block" onClick={this.handleLabelClick.bind(this)}>
+            <div className="btn btn-info btn-block" onClick={this.handleLabelClick.bind(this)} >
               <i className="fa fa-edit"></i> Compose
             </div>
 

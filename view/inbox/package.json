@@ -8,7 +8,8 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.5.1",
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "suneditor-react": "^2.12.5"
   },
   "devDependencies": {
     "gh-pages": "^1.0.0",

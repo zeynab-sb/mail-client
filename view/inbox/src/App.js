@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
-import SunEditor from 'suneditor-react';
-import 'suneditor/dist/css/suneditor.min.css';
+// import SunEditor from 'suneditor-react';
+// import 'suneditor/dist/css/suneditor.min.css';
+import 'suneditor/dist/css/suneditor.min.css'
+// import 'suneditor/assets/css/suneditor.css'
+// import 'suneditor/assets/css/suneditor-contents.css'
+import suneditor from 'suneditor'
 // import {Editor, EditorState} from 'draft-js';
 // import SunEditor from 'suneditor-react';
 
@@ -464,6 +468,10 @@ class ComposeMail extends React.Component {
     console.log(this.state.recipient)
   }
 
+  handleText(text){
+    this.state.text = "<p>"+text+"</p>"
+  }
+
 
   render() {
     var that = this;
@@ -482,45 +490,42 @@ class ComposeMail extends React.Component {
 
       //   console.log('clickeeeeeeeeeeeeeeeeed')
         return (
+        //   <div>
+        //   <suneditor/>
+        // </div>
+           <div className="modal-fade">
+            <div className="modal-dialog modal-lg"> 
+              <div className="modal-content">
+                 <div className="modal-header">
+                  <h3 className="modal-title">Compose Email</h3>
+                </div> 
+                 <div className="modal-body">
+                   <p>
+                  <p>
+                    <p>To</p>
+                    <input type="text" name="to" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.handleRecipients(e.target.value) }} />
+                  </p>
+                  <p>
+                    <p>Subject</p>
+                    <input type="text" name="subject" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.state.subject = e.target.value }} />
+                  </p>
+                  <p>
+                    <p>Text</p>
+                    <input type="text" name="text" style={{ width: "390px", height: "90px" , fontSize: 15 }} onChange={e => { this.handleText(e.target.value) }} />
+                    {/* <SunEditor /> */}
+                  </p>
+                  </p>
+                </div>
 
-          <div>
-          <SunEditor/>
-        </div>
-          //  <div className="modal-fade">
-          //   <div className="modal-dialog modal-lg"> 
-          //     <div className="modal-content">
-          //        <div className="modal-header">
-          //         <h3 className="modal-title">Compose Email</h3>
-          //       </div> 
-
-
-          //        <div className="modal-body">
-          //          <p>
-          //         <p>
-          //           <p>To</p>
-          //           <input type="text" name="to" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.handleRecipients(e.target.value) }} />
-          //         </p>
-          //         <p>
-          //           <p>Subject</p>
-          //           <input type="text" name="subject" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.state.subject = e.target.value }} />
-          //         </p>
-          //         <p>
-          //           <p>Text</p>
-          //           {/* <input type="text" name="text" width="110%" heigth="100%" onChange={e => { this.state.text = e }} /> */}
-          //           <SunEditor />
-          //         </p>
-          //         </p>
-          //       </div>
-
-          //       <div className="modal-footer">
-          //         <button type="button" className="btn btn-outline-danger more" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Disgard</button>
-          //         <button type="button" className="btn btn-outline-info more"
-          //           onClick={event => { this.handleSendClick(event) }}
-          //         >Send</button>
-          //       </div> 
-          //      </div> 
-          //   </div>
-          // </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-outline-danger more" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Discard</button>
+                  <button type="button" className="btn btn-outline-info more"
+                    onClick={event => { this.handleSendClick(event) }}
+                  >Send</button>
+                </div> 
+               </div> 
+            </div>
+          </div>
 
        )
     } else {

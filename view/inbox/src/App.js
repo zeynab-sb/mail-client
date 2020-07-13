@@ -32,6 +32,7 @@ class App extends React.Component {
         console.log('loginIngo', JSON.stringify(loginInfo))
         this.forceUpdate();
       }).catch(error => {
+        console.log('error', error)
         alert("Wrong password")
         window.location.reload(false);
       })
@@ -95,15 +96,7 @@ class MailboxLabels extends React.Component {
     },
     {
       id: 2,
-      name: 'Drafts',
-      emailNumber: 12
-    }, {
-      id: 3,
       name: 'Sent',
-      emailNumber: 9
-    }, {
-      id: 4,
-      name: 'Trash',
       emailNumber: 12
     }]
   };
@@ -246,14 +239,22 @@ class EmailItem extends React.Component {
 
 class EmptyBox extends React.Component {
   render() {
+    var html = `<h1 style="font-family:verdana;">This is a heading</h1>
+    <p style="font-family:courier;">This is a paragraph.</p>`
+    // var html = 'hello'
     console.log('state', this.props)
     return (
-      <p className="center">The email box is empty {this.props.id}</p>
+      <td dangerouslySetInnerHTML={{ __html: html }} />
+
     )
   }
 }
 
-
+class LoadingBox extends React.Component {
+  render() {
+    return (<p>Loading ... </p>)
+  }
+}
 
 class MainContainer extends React.Component {
 
@@ -261,6 +262,8 @@ class MainContainer extends React.Component {
     super(props);
     this.state = {
       selectedLabel: 1,
+      inboxCount: -1,
+      sentCount: -1,
       fethInbox: false
     }
   }
@@ -271,60 +274,61 @@ class MainContainer extends React.Component {
       selectedLabel: labelId
     });
   }
+
   handleUpdateMe() {
     this.props.onClick();
   }
 
-
   static defaultProps = {
     emails: [
-      {
-        id: 0,
-        labelId: 1,
-        from: 'Mike James',
-        subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        time: "11:15"
-      },
-      {
-        id: 1,
-        labelId: 1,
-        from: 'Emma Thompson',
-        subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        time: "22:08"
-      },
-      {
-        id: 2,
-        labelId: 1,
-        from: 'Olivia Jefferson',
-        subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        time: "19:12"
-      },
-      {
-        id: 3,
-        labelId: 1,
-        from: 'Mike Conley',
-        subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        time: "18:35"
-      },
-      {
-        id: 4,
-        labelId: 2,
-        from: 'Emily Iverson',
-        subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        time: "14:05"
-      },
-      {
-        id: 5,
-        labelId: 3,
-        from: 'Michael Neal',
-        subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        time: "14:05"
-      }
+      // {
+      //   id: 0,
+      //   labelId: 1,
+      //   from: 'Mike James',
+      //   subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      //   time: "11:15"
+      // },
+      // {
+      //   id: 1,
+      //   labelId: 1,
+      //   from: 'Emma Thompson',
+      //   subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      //   time: "22:08"
+      // },
+      // {
+      //   id: 2,
+      //   labelId: 1,
+      //   from: 'Olivia Jefferson',
+      //   subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      //   time: "19:12"
+      // },
+      // {
+      //   id: 3,
+      //   labelId: 1,
+      //   from: 'Mike Conley',
+      //   subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      //   time: "18:35"
+      // },
+      // {
+      //   id: 4,
+      //   labelId: 2,
+      //   from: 'Emily Iverson',
+      //   subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      //   time: "14:05"
+      // },
+      // {
+      //   id: 5,
+      //   labelId: 3,
+      //   from: 'Michael Neal',
+      //   subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      //   time: "14:05"
+      // }
     ]
 
   };
 
-  fetchInbox() {
+  synceMailbox() {
+
     console.log('fetching inboxxx')
     var api = "http://192.168.112.243:3001/api/mail/showInbox";
     var request = {
@@ -335,35 +339,42 @@ class MainContainer extends React.Component {
         'Authorization': `Bearer ${loginInfo.token}`
       }
     }
-    axios(request)
-      .then(response => {
-        var count = 0;
-        console.log('resonse', response)
-        for (var mail of response.data) {
-          this.props.emails.push(mail)
-          count++
+    if (this.state.mailCount != this.props.emails.length) {
+      axios(request)
+        .then(response => {
+          this.setState({ mailCount: response.data.length })
+          var count = 0;
+          console.log('resonse', response)
+          if (this.state.mailCount != this.props.emails.length) {
 
-          if (count == response.data.length) {
-            console.log('fetched alll')
-            this.setState({ fethInbox: true })
-            this.forceUpdate();
+            for (var mail of response.data) {
+              mail.labelId = 1;
+              this.props.emails.push(mail)
+              count++
+              if (count == response.data.length) {
+                console.log('fetched alll')
+                this.setState({ fethInbox: true })
+                this.forceUpdate();
+              }
+            }
           }
-        }
 
-      }).catch(error => {
-        console.log(error)
-      })
+        }).catch(error => {
+          console.log(error)
+        })
+    }
   }
 
 
   render() {
-    this.fetchInbox();
+    this.synceMailbox();
     console.log("props: ", this.props);
-    console.log("this is-> ", this.props.emails[0].labelId);
-    const filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
+    //console.log("this is-> ", this.props.emails[0].labelId);
 
     let content = null;
     if (this.state.fethInbox) {
+      const filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
+
       if (filteredEmails.length > 0) {
         content = <EmailList emails={filteredEmails} />;
       } else {
@@ -371,7 +382,9 @@ class MainContainer extends React.Component {
       }
     }
     else {
-      content = <EmptyBox />;
+
+      content = <LoadingBox />
+
     }
     return (
       <div className="container">

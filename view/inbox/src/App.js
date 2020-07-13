@@ -1,6 +1,16 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import SunEditor from 'suneditor-react/webpack.config';
+import 'suneditor/dist/css/suneditor.min.css';
 import './App.css';
+// import SunEditor from 'suneditor-react';
+// import 'suneditor/dist/css/suneditor.min.css';
+import 'suneditor/dist/css/suneditor.min.css'
+// import 'suneditor/assets/css/suneditor.css'
+// import 'suneditor/assets/css/suneditor-contents.css'
+import suneditor from 'suneditor'
+// import {Editor, EditorState} from 'draft-js';
+// import SunEditor from 'suneditor-react';
 
 var loginInfo = {
   email: "",
@@ -794,36 +804,11 @@ class EmailList extends React.Component {
       console.log('emmmaailill', this.state.results)
 
       return (
-        <div>
-           <p>
-        <h style = {{ color:'btn-inf9', fontWeight: 'bold'}}> To: </h> 
-        <h>{this.state.selectedEmail.to}</h>
-       </p>
-       <p>
-        <h style = {{ color:'btn-inf9', fontWeight: 'bold'}}>Subject: </h>
-        <h>{this.state.selectedEmail.subject}</h>
-        </p>
-        <p>
-      <h style = {{ color:'btn-inf9', fontWeight: 'bold'}}>Text: </h>
-      <d dangerouslySetInnerHTML={{ __html: this.state.selectedEmail.text} } />
-        </p>
-        <h>
-        <p>
-        <h style = {{ color:'btn-inf9', fontWeight: 'bold'}}>Date: </h> 
-        <h>{this.state.selectedEmail.date}</h>
-       </p>
-        <button type="button" className="btn btn-danger more" onClick={this.handleDeleteClick.bind(this)}>Delete</button>
-        </h>
-           <h>
-           <button type="button" className="btn btn-outline-info more" onClick={this.handleBackClick.bind(this)}>Back</button>
-           </h>
-           
+        <div className="modal-footer">
+          <button type="button" className="btn btn-danger more" onClick={this.handleDeleteClick.bind(this)}>Delete</button>
+          <button type="button" className="btn btn-outline-info more" onClick={this.handleBackClick.bind(this)}>Back</button>
+          <p>{this.state.selectedEmail.text}</p>
         </div>
-        // <div className="modal-footer">
-        //   <button type="button" className="btn btn-danger more" onClick={this.handleDeleteClick.bind(this)}>Delete</button>
-        //   <button type="button" className="btn btn-outline-info more" onClick={this.handleBackClick.bind(this)}>Back</button>
-        //   </div>  
-     
       )
 
     } else {

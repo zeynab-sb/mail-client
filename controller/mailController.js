@@ -23,24 +23,50 @@ module.exports = new class mailController {
 
         console.log(typeof req.body.email)
 
-        var config = {
-            imap: {
-                user: req.body.email,
-                password: req.body.password,
-                host: 'imap.gmail.com',
-                port: 993,
-                tls: true,
-                tlsOptions: { rejectUnauthorized: false },
-                authTimeout: 3000
-            },
-            nodemailer: {
-                service: 'gmail',
-                auth: {
+       var config
+       if (req.body.email.includes("gmail")) {
+            console.log('gmaaaaaaaaaaaaaaaaaail')
+            config = {
+                imap: {
                     user: req.body.email,
-                    pass: req.body.password
+                    password: req.body.password,
+                    host: 'imap.gmail.com',
+                    port: 993,
+                    tls: true,
+                    tlsOptions: { rejectUnauthorized: false },
+                    authTimeout: 9000
+                },
+                nodemailer: {
+                    service: 'gmail',
+                    auth: {
+                        user: req.body.email,
+                        pass: req.body.password
+                    }
                 }
-            }
-        };
+            };
+       }
+
+        if ((req.body.email.includes("yahoo")) || (req.body.email.includes("ymail"))) {
+            console.log('yahooooooooo')
+            config = {
+                imap: {
+                    user: req.body.email,
+                    password: req.body.password,
+                    host: 'imap.mail.yahoo.com',
+                    port: 993,
+                    tls: true,
+                    tlsOptions: { rejectUnauthorized: false },
+                    authTimeout: 10000
+                },
+                nodemailer: {
+                    service: 'yahoo',
+                    auth: {
+                        user: req.body.email,
+                        pass: req.body.password
+                    }
+                }
+            };
+        }
 
         try {
 
@@ -49,12 +75,14 @@ module.exports = new class mailController {
                 TokenController.createToken(req.body.email, JSON.stringify(config), function (error, result) {
 
                     if (error) {
+                        console.log(error)
                         res.status(402).send(error)
                     } else {
                         res.status(201).send({ token: result })
                     }
                 })
             }, function (error) {
+                console.log(error)
                 res.status(402).send(error)
             });
         }
@@ -65,6 +93,8 @@ module.exports = new class mailController {
     }
     async showInbox(req, res) {
 
+        console.log('in inboooooooooooooooooox')
+
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
             TokenController.checkToken(bearerHeader, function (err, token_check_result) {
@@ -73,8 +103,8 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    console.log('heeeeeeeeeeeere')
-                    console.log(token_check_result.imap)
+                    // console.log('heeeeeeeeeeeere')
+                    // console.log(token_check_result.imap)
 
                     imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
                         return connection.openBox('INBOX').then(function () {
@@ -90,6 +120,7 @@ module.exports = new class mailController {
                             var emails = []
                             return connection.search(searchCriteria, fetchOptions).then(function (results) {
 
+                                console.log('afteeeeeeeeeeeeeer serach')
                                 for (var j = 0; j < results.length; j++) {
                                     console.log(results[j])
                                     var seenStatus = false
@@ -111,12 +142,15 @@ module.exports = new class mailController {
                                     }
                                 }
                             }, function (error) {
+                                console.log(error)
                                 res.status(402).send(error)
                             });
                         }, function (error) {
+                            console.log(error)
                             res.status(402).send(error)
                         });
                     }, function (error) {
+                        console.log(error)
                         res.status(402).send(error)
                     })
 
@@ -138,15 +172,15 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    console.log('heeeeeeeeeeeere')
-                    console.log(token_check_result.nodemailer)
-                    console.log(token_check_result.nodemailer.auth.user)
+                    // console.log('heeeeeeeeeeeere')
+                    // console.log(token_check_result.nodemailer)
+                    // console.log(token_check_result.nodemailer.auth.user)
                     let transport = nodemailer.createTransport(token_check_result.nodemailer);
                     const message = {
                         from: token_check_result.nodemailer.auth.user,
                         to: req.body.receivers,
                         subject: req.body.subject,
-                        text: req.body.text
+                        html: req.body.text
                     };
                     transport.sendMail(message, function (err, info) {
                         if (err) {
@@ -238,17 +272,17 @@ module.exports = new class mailController {
                     console.log('heeeeeeeeeeeere')
                     console.log(token_check_result.imap)
 
-                   imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
-                    return connection.openBox('INBOX').then(function () {
-                    connection.addFlags(req.body.id, ['\\Seen'], function (err) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                console.log("Marked as read!")
-                                res.status(201).send({message: "Marked as seen"})
-                            }
-                        });
-                    })
+                    imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
+                        return connection.openBox('INBOX').then(function () {
+                            connection.addFlags(req.body.id, ['\\Seen'], function (err) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log("Marked as read!")
+                                    res.status(201).send({ message: "Marked as seen" })
+                                }
+                            });
+                        })
                     }, function (error) {
                         res.status(402).send(error)
                     });
@@ -258,7 +292,7 @@ module.exports = new class mailController {
         }
     }
 
-    async deleteEmail(req,res){
+    async deleteEmail(req, res) {
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
             TokenController.checkToken(bearerHeader, function (err, token_check_result) {
@@ -270,17 +304,17 @@ module.exports = new class mailController {
                     console.log('heeeeeeeeeeeere')
                     console.log(token_check_result.imap)
 
-                   imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
-                    return connection.openBox('INBOX').then(function () {
-                    connection.addFlags(req.body.id,  ['\Seen','\Deleted'], function (err) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                console.log("Deleted")
-                                res.status(201).send({message: "Deleted"})
-                            }
-                        });
-                    })
+                    imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
+                        return connection.openBox('INBOX').then(function () {
+                            connection.addFlags(req.body.id, ['\Seen', '\Deleted'], function (err) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log("Deleted")
+                                    res.status(201).send({ message: "Deleted" })
+                                }
+                            });
+                        })
                     }, function (error) {
                         res.status(402).send(error)
                     });
@@ -290,7 +324,7 @@ module.exports = new class mailController {
         }
     }
 
-    async getAllDeletedItems(req,res){
+    async getAllDeletedItems(req, res) {
 
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
@@ -350,6 +384,50 @@ module.exports = new class mailController {
             })
         }
 
+    }
+
+    async numberOfUnseen(req,res){
+
+        if (req.headers['authorization']) {
+            const bearerHeader = req.headers['authorization']
+            TokenController.checkToken(bearerHeader, function (err, token_check_result) {
+                if (err) {
+                    res.status(401).send({
+                        success: false
+                    });
+                } else {
+                    imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
+                        return connection.openBox('INBOX').then(function () {
+                            var searchCriteria = [
+                                'UNSEEN'
+                            ];
+
+                            var fetchOptions = {
+                                bodies: ['HEADER', 'TEXT'],
+                                markSeen: false
+                            };
+                            return connection.search(searchCriteria, fetchOptions).then(function (results) {
+                                console.log(results.length)
+                                res.status(201).send({number_of_unseen : results.length})
+
+
+                            }, function (error) {
+                                res.status(402).send(error)
+                            })
+
+                        }, function (error) {
+                            res.status(402).send(error)
+                        })
+
+                    }, function (error) {
+                        res.status(402).send(error)
+                    })
+
+                }
+
+            })
+
+        }
     }
 
 }

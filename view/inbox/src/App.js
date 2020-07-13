@@ -1012,102 +1012,105 @@ class MainContainer extends React.Component {
   }
 
   synceMailbox() {
-    console.log('am I being called??????')
-    var array = 0;
-    var length = this.props.emails.length;
-    console.log('1array', array, 'len', length)
-    if (length == 0) {
+    console.log('sync mailbox')
+    var apiInbox = "http://192.168.112.243:3001/api/mail/showInbox";
+    var apiSent = "http://192.168.112.243:3001/api/mail/getSentItems";
 
-    } else {
-
-      for (var mail of this.props.emails) {
-
-        console.log('2array', array, 'len', length)
-        this.props.emails.pop();
-        console.log('3array', array, 'len', length)
-        array++
+    var requestInbox = {
+      method: 'get',
+      url: apiInbox,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${loginInfo.token}`
       }
     }
 
-    if (array == length) {
-
-      console.log('sync mailbox')
-      var apiInbox = "http://192.168.112.243:3001/api/mail/showInbox";
-      var apiSent = "http://192.168.112.243:3001/api/mail/getSentItems";
-
-      var requestInbox = {
-        method: 'get',
-        url: apiInbox,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${loginInfo.token}`
-        }
+    var requestSent = {
+      method: 'get',
+      url: apiSent,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${loginInfo.token}`
       }
+    }
 
-      var requestSent = {
-        method: 'get',
-        url: apiSent,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${loginInfo.token}`
-        }
-      }
+    axios(requestInbox)
+      .then(responseInbox => {
+        var count = 0;
+        console.log('resonse', responseInbox)
+        for (var mail of responseInbox.data) {
+          console.log('adding mail to props', count + 1)
+          mail.labelId = 1;
+          mail.mailID = mail.id
+          mail.id = count + 1;
 
-      axios(requestInbox)
-        .then(responseInbox => {
-          var count = 0;
-          console.log('resonse', responseInbox)
-          for (var mail of responseInbox.data) {
-            console.log('adding mail to props', count + 1)
-            mail.labelId = 1;
-            mail.id = count + 1;
-            this.props.emails.push(mail)
-            count++
-            if (count == responseInbox.data.length) {
+          this.props.emails.push(mail)
+          count++
+          if (count == responseInbox.data.length) {
 
-              this.state.fetchedInbox = true;
-              console.log('set state ture in inbox ->', this.state.fetchedInbox, this.state.fetchedSent)
-              axios(requestSent)
-                .then(responseSent => {
-                  console.log('resonse', responseSent)
-                  for (var mail of responseSent.data) {
-                    console.log('adding sent to props', count + 1)
-                    mail.labelId = 3;
-                    mail.id = count + 1;
-                    console.log('thois is sent mail adding to props', mail)
-                    this.props.emails.push(mail)
-                    count++
-                    if (count == (responseInbox.data.length + responseSent.data.length)) {
-                      this.state.fetchedSent = true;
-                      console.log('set state ture in sent ->', this.state.fetchedInbox, this.state.fetchedSent)
-                      if (this.state.fetchedInbox && this.state.fetchedSent) {
-                        console.log('now render again')
-                        this.setState({ "mailCount": count })
-                        this.forceUpdate();
-                      }
+            this.state.fetchedInbox = true;
+            console.log('set state ture in inbox ->', this.state.fetchedInbox, this.state.fetchedSent)
+            axios(requestSent)
+              .then(responseSent => {
+                console.log('resonse', responseSent)
+                for (var mail of responseSent.data) {
+                  console.log('adding sent to props', count + 1)
+                  mail.labelId = 3;
+
+                  mail.mailID = mail.id
+                  mail.id = count + 1;
+
+                  console.log('thois is sent mail adding to props', mail)
+                  this.props.emails.push(mail)
+                  count++
+                  if (count == (responseInbox.data.length + responseSent.data.length)) {
+                    this.state.fetchedSent = true;
+                    console.log('set state ture in sent ->', this.state.fetchedInbox, this.state.fetchedSent)
+                    if (this.state.fetchedInbox && this.state.fetchedSent) {
+                      console.log('now render again')
+                      this.setState({ "mailCount": count })
+                      this.forceUpdate();
                     }
                   }
-                }).catch(error => {
-                  console.log(error)
-                })
+                }
+              }).catch(error => {
+                console.log(error)
+              })
 
 
-              // if (this.state.fetchedInbox && this.state.fetchedSent) {
-              //   console.log('now render again inbox')
-              //   this.forceUpdate();
-              // }
+            // if (this.state.fetchedInbox && this.state.fetchedSent) {
+            //   console.log('now render again inbox')
+            //   this.forceUpdate();
+            // }
 
-            }
           }
-        }).catch(error => {
-          console.log(error)
-        })
+        }
+      }).catch(error => {
+        console.log(error)
+      })
 
-    } else {
-      array++;
-    }
+    // } else {
+    //   array++;
+    // }
 
   }
+
+  // componentDidUpdate() {
+  //   console.log('am I being called??????')
+  //   var array = 0;
+  //   var length = this.props.emails.length;
+  //   console.log('1array', array, 'len', length)
+  //   for (var mail of this.props.emails) {
+  //     console.log('2array', array, 'len', length)
+  //     this.props.emails.pop();
+  //     console.log('3array', array, 'len', length)
+  //     array++;
+  //     if (array == length) {
+  //       this.synceMailbox();
+  //     }
+  //   }
+  // }
+
 
   componentWillMount() {
     this.synceMailbox();
@@ -1168,11 +1171,11 @@ class MainContainer extends React.Component {
       console.log('this is state value of mailbox', this.state.selectedLabel)
       var filteredEmails; //= this.props.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
       if (this.state.selectedLabel == 1) {
-        this.synceMailbox()
+        // this.synceMailbox()
         filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == 1);
         console.log('sellect inbox', filteredEmails)
       } else if (this.state.selectedLabel == 3) {
-        this.synceMailbox()
+        // this.synceMailbox()
         filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == 3);
         console.log('seleeecctt sent', filteredEmails)
       }

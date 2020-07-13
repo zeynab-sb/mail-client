@@ -838,7 +838,9 @@ class EmailList extends React.Component {
     axios(request)
       .then(response => {
         console.log('this is response', response.data)
+        this.state.deleteClicked = false;
         this.state.clicked = false
+        this.forceUpdate();
         alert("Email Deleted")
         //this.props.onClick()
       }).catch(error => {
@@ -954,8 +956,8 @@ class EmailItem extends React.Component {
         </div>
 
           &nbsp;&nbsp;<span className="fa fa-star-o"></span>&nbsp;&nbsp;
-        <span className="name">{this.props.email.from}</span>
-        <span>{this.props.email.subject}</span>
+        <h><span className="name">{this.props.email.from}</span></h>
+        <h><span>{this.props.email.subject}</span></h>
 
         <span className="ml-auto p-2">
           <span className="badge badge-default badge-pill">{this.props.email.time}</span>
@@ -1297,7 +1299,7 @@ class ComposeMail extends React.Component {
               </div>
 
               <div className="modal-footer">
-                <button type="button" className="btn btn-outline-danger more" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Disgard</button>
+                <button type="button" className="btn btn-outline-danger more" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Discard</button>
                 <button type="button" className="btn btn-outline-info more"
                   onClick={event => { this.handleSendClick(event) }}
                 >Send</button>

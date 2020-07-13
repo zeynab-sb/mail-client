@@ -14,16 +14,16 @@ class App extends React.Component {
   }
 
   login() {
-    // var api = "http://localhost:3000/api/mail/login";
-    var api = "http://192.168.96.191:3000/api/user/login";
+    var api = "http://192.168.112.243:3001/api/mail/login";
+    // var api = "http://192.168.96.191:3000/api/user/login";
     var request = {
       method: 'post',
       url: api,
       headers: {
         'Content-Type': 'application/json',
       },
-      // data: { "email": loginInfo.email, "password": loginInfo.password }
-      data: { "username": loginInfo.email, "password": loginInfo.password }
+      data: { "email": loginInfo.email, "password": loginInfo.password }
+      // data: { "username": loginInfo.email, "password": loginInfo.password }
     }
     axios(request)
       .then(response => {
@@ -361,8 +361,9 @@ class ComposeMail extends React.Component {
     super(props);
     this.state = {
       clicked: false,
-      recipient: "",
-      text: ""
+      recipient: "shaghayeghtavakoli2@gmail.com",
+      subject: "Send From UI",
+      text: "<p>This is a test</p>"
     }
   }
 
@@ -378,7 +379,8 @@ class ComposeMail extends React.Component {
   }
 
   handleSendClick() {
-    var api = "http://192.168.96.191:3000/api/service/getServicesByUser";
+    var api = "http://192.168.112.243:3001/api/mail/sendEmail";
+    
     var request = {
       method: 'post',
       url: api,
@@ -386,8 +388,8 @@ class ComposeMail extends React.Component {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${loginInfo.token}`
       },
-      // data: { "email": loginInfo.email, "password": loginInfo.password }
-      data: { "name": "DNS" }
+      data: {"receivers":[this.state.recipient],"subject":this.state.subject,"text":this.state.text}
+    
     }
     axios(request)
       .then(response => {

@@ -705,17 +705,51 @@ class MailboxLabels extends React.Component {
       sentCount: 0
     }
   }
+  componentWillMount() {
+    this.syncMailCount();
+  }
+  syncMailCount() {
+    var apiUnseen = 'http://192.168.112.243:3001/api/mail/numberOfUnseen';
+
+    var requestUnseen = {
+      method: 'get',
+      url: apiUnseen,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${loginInfo.token}`
+      }
+    }
+
+    axios(requestUnseen)
+      .then(responseUnseen => {
+        this.setState({ inboxCount: responseUnseen.data.number_of_unseen })
+        for (var label of this.props.labels) {
+          if (label.id == 1) {
+            var index = this.props.labels.indexOf(label);
+            var newLable = {
+              id: 1,
+              name: 'Inbox',
+              emailNumber: responseUnseen.data.number_of_unseen
+            }
+            if (index !== -1) {
+              this.props.labels[index] = newLable;
+            }
+          }
+        }
+      }).catch(error => {
+
+      })
+  }
 
   static defaultProps = {
     labels: [{
       id: 1,
       name: 'Inbox',
-      // emailNumber: this.state.inboxCount
+      emailNumber: 0
     },
     {
       id: 3,
       name: 'Sent',
-      //      emailNumber: this.state.sentCount
     }]
   };
 
@@ -742,12 +776,25 @@ class MailboxItem extends React.Component {
   }
 
   render() {
-    return (
-      <li className="list-group-item justify-content-between" onClick={this.handleMailboxClick.bind(this)}>
-        {this.props.label.name}
-        <span className="badge badge-default badge-pill">{this.props.label.emailNumber}</span>
-      </li>
-    )
+    if (this.props.label.emailNumber) {
+      return (
+
+        <li className="list-group-item justify-content-between" onClick={this.handleMailboxClick.bind(this)}>
+          {this.props.label.name}
+          <span className="badge badge-info badge-pill">{this.props.label.emailNumber}</span>
+        </li>
+      )
+    }
+    else {
+      return (
+
+        <li className="list-group-item justify-content-between" onClick={this.handleMailboxClick.bind(this)}>
+          {this.props.label.name}
+
+        </li>
+      )
+    }
+
   }
 }
 
@@ -1197,7 +1244,7 @@ class ComposeMail extends React.Component {
     }
     axios(request)
       .then(response => {
-        console.log('this is token', response.data.results)
+        // console.log('this is token', response.data.results)
         this.state.clicked = false
         alert("Email Sent")
         this.props.onClick()

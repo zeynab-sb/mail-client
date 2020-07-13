@@ -3,6 +3,14 @@ import axios from 'axios';
 import SunEditor from 'suneditor-react/webpack.config';
 import 'suneditor/dist/css/suneditor.min.css';
 import './App.css';
+// import SunEditor from 'suneditor-react';
+// import 'suneditor/dist/css/suneditor.min.css';
+import 'suneditor/dist/css/suneditor.min.css'
+// import 'suneditor/assets/css/suneditor.css'
+// import 'suneditor/assets/css/suneditor-contents.css'
+import suneditor from 'suneditor'
+// import {Editor, EditorState} from 'draft-js';
+// import SunEditor from 'suneditor-react';
 
 var loginInfo = {
   email: "",
@@ -1115,6 +1123,16 @@ class ComposeMail extends React.Component {
       })
   }
 
+  handleRecipients(recipients) {
+    this.state.recipient = []
+    this.state.recipient = recipients.split(',')
+    console.log(this.state.recipient)
+  }
+
+  handleText(text){
+    this.state.text = "<p>"+text+"</p>"
+  }
+
 
   render() {
     var that = this;
@@ -1141,9 +1159,8 @@ class ComposeMail extends React.Component {
               </div>
             </div>
           </div>
-        </div>
-
-      )
+          </div>
+       )
     } else {
       return (
         <div className="row">

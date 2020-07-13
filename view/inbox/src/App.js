@@ -37,13 +37,16 @@ class App extends React.Component {
       })
 
   }
-
+  updateMe() {
+    console.log('updating meeee')
+    this.forceUpdate();
+  }
   render() {
     if (loginInfo.token != "") {
       return (
         <div>
           <NavigationBar title="Étoile Email Manager" user={loginInfo.email} />
-          <MainContainer />
+          <MainContainer onClick={this.updateMe.bind(this)} />
         </div>
       )
     } else {
@@ -270,7 +273,9 @@ class MainContainer extends React.Component {
       selectedLabel: labelId
     });
   }
-
+  handleUpdateMe() {
+    this.props.onClick();
+  }
 
   static defaultProps = {
     emails: [
@@ -335,7 +340,7 @@ class MainContainer extends React.Component {
 
     return (
       <div className="container">
-        <ComposeMail />
+        <ComposeMail onClick={this.handleUpdateMe.bind(this)} />
         <hr />
         <div className="row">
           <div className="col-12 col-sm-12 col-md-3 col-lg-2">
@@ -355,32 +360,117 @@ class ComposeMail extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      clicked: false
+      clicked: false,
+      recipient: "",
+      text: ""
     }
   }
 
   handleLabelClick() {
-    console.log('heeereee vhaniginf button')
     this.state.clicked = true
-    loginInfo.email = "yo ha ha ha";
-
-    //console.log('heeereee button', loginInfo)
-
     this.forceUpdate();
+  }
+
+  handleCloseClick() {
+    console.log('Close Click')
+    this.state.clicked = false
+    this.forceUpdate();
+  }
+
+  handleSendClick() {
+    var api = "http://192.168.96.191:3000/api/service/getServicesByUser";
+    var request = {
+      method: 'post',
+      url: api,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${loginInfo.token}`
+      },
+      // data: { "email": loginInfo.email, "password": loginInfo.password }
+      data: { "name": "DNS" }
+    }
+    axios(request)
+      .then(response => {
+        console.log('this is token', response.data.results)
+        this.state.clicked = false
+        alert("Email Sent")
+        this.props.onClick()
+      }).catch(error => {
+       // alert("Try Again")
+      })
   }
 
 
   render() {
     if (this.state.clicked) {
+      return (
+        <div className="modal-fade">
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h3 className="modal-title">Compose Email</h3>
+              </div>
 
-      return (<div>this is going to work!!!</div>)
+
+              <div className="modal-body">
+                <p>One fine body&hellip;</p>
+              </div>
+
+
+
+              <div className="modal-footer">
+                <button type="button" className="btn btn-outline-danger" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Disgard</button>
+                <button type="button" className="btn btn-outline-info" onClick={this.handleSendClick.bind(this)}>Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        // <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        //   <div className="modal-dialog" role="document">
+        //     <div className="modal-content">
+        //       <div className="modal-header">
+        //         <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
+        //         <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+        //           <span aria-hidden="true">&times;</span>
+        //         </button>
+        //       </div>
+        //       <div className="modal-body">
+
+        //       </div>
+        //       <div className="modal-footer">
+        //         <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+        //         <button type="button" className="btn btn-primary">Save changes</button>
+        //       </div>
+        //     </div>
+        //   </div>
+        // </div>
+        // <div class="modal" tabindex="-1" role="dialog">
+        //   <div class="modal-dialog" role="document">
+        //     <div class="modal-content">
+        //       <div class="modal-header">
+        //         <h5 class="modal-title">Modal title</h5>
+        //         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        //           <span aria-hidden="true">&times;</span>
+        //         </button>
+        //       </div>
+        //       <div class="modal-body">
+        //         <p>Modal body text goes here.</p>
+        //       </div>
+        //       <div class="modal-footer">
+        //         <button type="button" class="btn btn-primary">Save changes</button>
+        //       </div>
+        //       <div className="btn btn-info btn-block more" onClick={this.handleLabelClick.bind(this)} >Close</div>
+        //     </div>
+        //   </div>
+        // </div>
+      )
     } else {
       //      console.log('heeereee nooottt button', loginInfo)
       return (
         <div className="row">
           <div className="col-12">
             {/* <div className="btn btn-info btn-block" onClick={this.handleLabelClick.bind(this)} > */}
-            <div className="btn btn-info btn-block more" onClick={this.handleLabelClick.bind(this)} >
+            <div className="btn btn-info btn-block more" data-toggle="modal" data-target="#myModal" onClick={this.handleLabelClick.bind(this)} >
 
               <i className="fa fa-edit"></i> Compose
             </div>
@@ -451,7 +541,7 @@ class Login extends Component {
           <input type="text" className="form-control" placeholder="Enter password"
             onChange={e => loginInfo.password = e.target.value} />
         </div>
-        <button type="button" className="btn btn-info btn-block more" onClick={this.handleSubmitClick.bind(this)}>Submit</button>
+        <button type="button" className="btn btn-info btn-block more" onClick={this.handleSubmitClick.bind(this)}>Login</button>
       </form>
 
     );

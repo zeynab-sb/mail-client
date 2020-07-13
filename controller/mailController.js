@@ -23,8 +23,8 @@ module.exports = new class mailController {
 
         console.log(typeof req.body.email)
 
-        var config
-        if (req.body.email.includes("gmail")) {
+       var config
+       if (req.body.email.includes("gmail")) {
             console.log('gmaaaaaaaaaaaaaaaaaail')
             config = {
                 imap: {
@@ -34,7 +34,7 @@ module.exports = new class mailController {
                     port: 993,
                     tls: true,
                     tlsOptions: { rejectUnauthorized: false },
-                    authTimeout: 3000
+                    authTimeout: 9000
                 },
                 nodemailer: {
                     service: 'gmail',
@@ -44,7 +44,7 @@ module.exports = new class mailController {
                     }
                 }
             };
-        }
+       }
 
         if ((req.body.email.includes("yahoo")) || (req.body.email.includes("ymail"))) {
             console.log('yahooooooooo')
@@ -56,7 +56,7 @@ module.exports = new class mailController {
                     port: 993,
                     tls: true,
                     tlsOptions: { rejectUnauthorized: false },
-                    authTimeout: 3000
+                    authTimeout: 10000
                 },
                 nodemailer: {
                     service: 'yahoo',
@@ -75,12 +75,14 @@ module.exports = new class mailController {
                 TokenController.createToken(req.body.email, JSON.stringify(config), function (error, result) {
 
                     if (error) {
+                        console.log(error)
                         res.status(402).send(error)
                     } else {
                         res.status(201).send({ token: result })
                     }
                 })
             }, function (error) {
+                console.log(error)
                 res.status(402).send(error)
             });
         }
@@ -91,6 +93,8 @@ module.exports = new class mailController {
     }
     async showInbox(req, res) {
 
+        console.log('in inboooooooooooooooooox')
+
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
             TokenController.checkToken(bearerHeader, function (err, token_check_result) {
@@ -99,8 +103,8 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    console.log('heeeeeeeeeeeere')
-                    console.log(token_check_result.imap)
+                    // console.log('heeeeeeeeeeeere')
+                    // console.log(token_check_result.imap)
 
                     imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
                         return connection.openBox('INBOX').then(function () {
@@ -116,6 +120,7 @@ module.exports = new class mailController {
                             var emails = []
                             return connection.search(searchCriteria, fetchOptions).then(function (results) {
 
+                                console.log('afteeeeeeeeeeeeeer serach')
                                 for (var j = 0; j < results.length; j++) {
                                     console.log(results[j])
                                     var seenStatus = false
@@ -137,12 +142,15 @@ module.exports = new class mailController {
                                     }
                                 }
                             }, function (error) {
+                                console.log(error)
                                 res.status(402).send(error)
                             });
                         }, function (error) {
+                            console.log(error)
                             res.status(402).send(error)
                         });
                     }, function (error) {
+                        console.log(error)
                         res.status(402).send(error)
                     })
 
@@ -164,9 +172,9 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    console.log('heeeeeeeeeeeere')
-                    console.log(token_check_result.nodemailer)
-                    console.log(token_check_result.nodemailer.auth.user)
+                    // console.log('heeeeeeeeeeeere')
+                    // console.log(token_check_result.nodemailer)
+                    // console.log(token_check_result.nodemailer.auth.user)
                     let transport = nodemailer.createTransport(token_check_result.nodemailer);
                     const message = {
                         from: token_check_result.nodemailer.auth.user,
@@ -376,6 +384,50 @@ module.exports = new class mailController {
             })
         }
 
+    }
+
+    async numberOfUnseen(req,res){
+
+        if (req.headers['authorization']) {
+            const bearerHeader = req.headers['authorization']
+            TokenController.checkToken(bearerHeader, function (err, token_check_result) {
+                if (err) {
+                    res.status(401).send({
+                        success: false
+                    });
+                } else {
+                    imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
+                        return connection.openBox('INBOX').then(function () {
+                            var searchCriteria = [
+                                'UNSEEN'
+                            ];
+
+                            var fetchOptions = {
+                                bodies: ['HEADER', 'TEXT'],
+                                markSeen: false
+                            };
+                            return connection.search(searchCriteria, fetchOptions).then(function (results) {
+                                console.log(results.length)
+                                res.status(201).send({number_of_unseen : results.length})
+
+
+                            }, function (error) {
+                                res.status(402).send(error)
+                            })
+
+                        }, function (error) {
+                            res.status(402).send(error)
+                        })
+
+                    }, function (error) {
+                        res.status(402).send(error)
+                    })
+
+                }
+
+            })
+
+        }
     }
 
 }

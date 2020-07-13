@@ -10,6 +10,7 @@ app.get('/getSentItems',mailController.getSentItems);
 app.post('/markUnseenAsSeen',mailController.markUnseenAsSeen);
 app.post('/deleteEmail',mailController.deleteEmail);
 app.get('/getAllDeletedItems',mailController.getAllDeletedItems);
+app.get('/numberOfUnseen',mailController.numberOfUnseen)
 module.exports = app
 console.log('here')
 

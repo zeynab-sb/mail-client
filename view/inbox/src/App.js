@@ -823,7 +823,7 @@ class EmailList extends React.Component {
     event.target.setAttribute("disabled", true);
     console.log('clicked Send')
     console.log(this.state.selectedEmail.id)
-    var api = "http://localhost:3001/api/mail/deleteEmail";
+    var api = "http://192.168.112.243:3001/api/mail/deleteEmail";
 
     var request = {
       method: 'post',

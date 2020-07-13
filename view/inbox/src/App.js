@@ -822,7 +822,7 @@ class EmailList extends React.Component {
 
     event.target.setAttribute("disabled", true);
     console.log('clicked Send')
-    console.log(this.state.selectedEmail.id)
+    console.log(this.state.selectedEmail.mailID)
     var api = "http://192.168.112.243:3001/api/mail/deleteEmail";
 
     var request = {
@@ -832,7 +832,7 @@ class EmailList extends React.Component {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${loginInfo.token}`
       },
-      data: { "id": this.state.selectedEmail.id }
+      data: { "id": this.state.selectedEmail.mailID }
 
     }
     axios(request)
@@ -840,7 +840,7 @@ class EmailList extends React.Component {
         console.log('this is response', response.data)
         this.state.clicked = false
         alert("Email Deleted")
-        this.props.onClick()
+        //this.props.onClick()
       }).catch(error => {
         console.log("error", error)
         alert("Try Again")

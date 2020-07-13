@@ -1041,7 +1041,9 @@ class MainContainer extends React.Component {
         for (var mail of responseInbox.data) {
           console.log('adding mail to props', count + 1)
           mail.labelId = 1;
-          //    mail.id = count + 1;
+          mail.mailID = mail.id
+          mail.id = count + 1;
+
           this.props.emails.push(mail)
           count++
           if (count == responseInbox.data.length) {
@@ -1054,7 +1056,10 @@ class MainContainer extends React.Component {
                 for (var mail of responseSent.data) {
                   console.log('adding sent to props', count + 1)
                   mail.labelId = 3;
-                  //                  mail.id = count + 1;
+
+                  mail.mailID = mail.id
+                  mail.id = count + 1;
+
                   console.log('thois is sent mail adding to props', mail)
                   this.props.emails.push(mail)
                   count++

@@ -2,18 +2,65 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
 
+var loginInfo = {
+  email: "",
+  password: "",
+  token: "",
+}
 
 class App extends React.Component {
-  // Call API to fetch User Email
+  constructor(props) {
+    super(props);
+  }
+
+  login() {
+    // var api = "http://localhost:3000/api/mail/login";
+    var api = "http://192.168.96.191:3000/api/user/login";
+    var request = {
+      method: 'post',
+      url: api,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // data: { "email": loginInfo.email, "password": loginInfo.password }
+      data: { "username": loginInfo.email, "password": loginInfo.password }
+    }
+    axios(request)
+      .then(response => {
+        console.log(response.data)
+        loginInfo.token = response.data.token;
+        console.log('loginIngo', JSON.stringify(loginInfo))
+        this.forceUpdate();
+      }).catch(error => {
+        alert("Wrong password")
+        window.location.reload(false);
+      })
+
+  }
+
   render() {
-    return (
-      <div>
-        <NavigationBar title="Étoile Email Manager" user="shaghayegh.tavakoli@gmail.com" />
-        <MainContainer />
-      </div>
-    )
+    if (loginInfo.token != "") {
+      return (
+        <div>
+          <NavigationBar title="Étoile Email Manager" user={loginInfo.email} />
+          <MainContainer />
+        </div>
+      )
+    } else {
+      return (
+        <div>
+          <NavigationBar title="Étoile Email Manager" user={loginInfo.email} />
+          <div className="auth-wrapper">
+            <div className="auth-inner">
+              <Login onClick={this.login.bind(this)} />
+            </div>
+          </div>
+        </div>
+      )
+    }
   }
 }
+
 
 class NavigationBar extends React.Component {
   render() {
@@ -199,10 +246,10 @@ class EmailItem extends React.Component {
 
 
 class EmptyBox extends React.Component {
-
   render() {
+    console.log('state', this.props)
     return (
-      <p className="center">The email box is empty.</p>
+      <p className="center">The email box is empty {this.props.id}</p>
     )
   }
 }
@@ -226,8 +273,6 @@ class MainContainer extends React.Component {
 
 
   static defaultProps = {
-
-    // Emails to be displayed on the Email List
     emails: [
       {
         id: 0,
@@ -317,6 +362,10 @@ class ComposeMail extends React.Component {
   handleLabelClick() {
     console.log('heeereee vhaniginf button')
     this.state.clicked = true
+    loginInfo.email = "yo ha ha ha";
+
+    //console.log('heeereee button', loginInfo)
+
     this.forceUpdate();
   }
 
@@ -326,11 +375,13 @@ class ComposeMail extends React.Component {
       console.log('heeereee button')
       return (<div>this is going to work!!!</div>)
     } else {
-      console.log('heeereee nooottt button')
+      //      console.log('heeereee nooottt button', loginInfo)
       return (
         <div className="row">
           <div className="col-12">
-            <div className="btn btn-info btn-block" onClick={this.handleLabelClick.bind(this)}>
+            {/* <div className="btn btn-info btn-block" onClick={this.handleLabelClick.bind(this)} > */}
+            <div className="btn btn-info btn-block more" onClick={this.handleLabelClick.bind(this)} >
+
               <i className="fa fa-edit"></i> Compose
             </div>
 
@@ -338,6 +389,72 @@ class ComposeMail extends React.Component {
         </div>
       )
     }
+  }
+}
+
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: ""
+    }
+  }
+
+  // login () {
+  //   console.log("state: ", JSON.stringify(this.state))
+  //   // var api = "http://localhost:3000/api/mail/login";
+  //   var api = "http://192.168.96.191:3000/api/user/login";
+  //   var request = {
+  //     method: 'post',
+  //     url: api,
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     data: { "username": this.state.email, "password": this.state.password }
+  //   }
+  //   axios(request)
+  //     .then(response => {
+  //       console.log('hhhhhhhhhhhhhhhhhhhhhhhh')
+  //       console.log(response.data)
+  //       loginInfo.email = this.state.email;
+  //       loginInfo.token = response.data.token;
+  //       console.log('loginIngo', JSON.stringify(loginInfo))
+  //     }).catch(err => {
+
+  //       console.log(JSON.stringify(loginInfo))
+  //       console.log("here is what im rejecting:", err)
+  //     })
+  // }
+
+  handleSubmitClick() {
+    console.log("Handling Submit...")
+    this.props.onClick();
+  }
+  render() {
+    return (
+
+      <form>
+        <h3>Étoile Email Manager</h3>
+        <div className="form-group">
+          <label>Email address</label>
+          {/* <input type="email" className="form-control col-xs-4" placeholder="Enter email"
+            onChange={e => this.setState({ email: e.target.value })} /> */}
+          <input type="text" className="form-control col-xs-4" placeholder="Enter email"
+            onChange={e => loginInfo.email = e.target.value} />
+        </div>
+        <div className="form-group">
+          <label>Password</label>
+          {/* <input type="password" className="form-control" placeholder="Enter password"
+            onChange={e => this.setState({ password: e.target.value })} /> */}
+
+          <input type="text" className="form-control" placeholder="Enter password"
+            onChange={e => loginInfo.password = e.target.value} />
+        </div>
+        <button type="button" className="btn btn-info btn-block more" onClick={this.handleSubmitClick.bind(this)}>Submit</button>
+      </form>
+
+    );
   }
 }
 

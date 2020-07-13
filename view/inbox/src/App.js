@@ -758,6 +758,7 @@ class EmailList extends React.Component {
   }
 
   handleBackClick() {
+    console.log('set back to true')
     this.state.backClicked = true;
     this.state.clicked = false;
     this.forceUpdate();
@@ -768,25 +769,30 @@ class EmailList extends React.Component {
   }
 
   handleEmailClick(id) {
+    this.state.backClicked = false;
     console.log('this is clicked....', id)
     console.log('porpse', this.props.emails)
     for (var email of this.props.emails) {
+      console.log('this is in the for')
       if (email) {
-        if (email.id == id)
-          this.state.selectedEmail = email;
+        console.log('this is in if for check email')
+        if (email.id == id) {
+          console.log('this is in if for select email', email)
+          this.state.selectedEmail = email
+          this.state.clicked = true;
+          console.log('this is the whole state', this.state)
+          this.forceUpdate();
+        }
       }
     }
-   // this.state.clicked = true;
-   // this.forceUpdate();
-   this.setState({clicked: true})
+    // this.state.clicked = true;
+    // this.forceUpdate();
   };
 
   render() {
     if (this.state.clicked == true && this.state.backClicked == false) {
       console.log('herreee', this.state.clicked);
       this.state.clicked = false;
-
-
       console.log('herreee222', this.state.selectedEmail);
       console.log('emmmaailill', this.state.results)
 
@@ -794,13 +800,12 @@ class EmailList extends React.Component {
         <div className="modal-footer">
           <button type="button" className="btn btn-danger more" onClick={this.handleDeleteClick.bind(this)}>Delete</button>
           <button type="button" className="btn btn-outline-info more" onClick={this.handleBackClick.bind(this)}>Back</button>
-          <p>{this.props.email.text}</p>
+          <p>{this.state.selectedEmail.text}</p>
         </div>
       )
 
     } else {
-      this.state.backClicked = true;
-      // if (this.state.mailboxID == 1) {
+
       return (
         <div>
           <div className="list-group">
@@ -1129,8 +1134,8 @@ class ComposeMail extends React.Component {
     console.log(this.state.recipient)
   }
 
-  handleText(text){
-    this.state.text = "<p>"+text+"</p>"
+  handleText(text) {
+    this.state.text = "<p>" + text + "</p>"
   }
 
 
@@ -1159,8 +1164,8 @@ class ComposeMail extends React.Component {
               </div>
             </div>
           </div>
-          </div>
-       )
+        </div>
+      )
     } else {
       return (
         <div className="row">

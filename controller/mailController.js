@@ -23,8 +23,8 @@ module.exports = new class mailController {
 
         console.log(typeof req.body.email)
 
-       var config
-       if (req.body.email.includes("gmail")) {
+        var config
+        if (req.body.email.includes("gmail")) {
             console.log('gmaaaaaaaaaaaaaaaaaail')
             config = {
                 imap: {
@@ -34,7 +34,7 @@ module.exports = new class mailController {
                     port: 993,
                     tls: true,
                     tlsOptions: { rejectUnauthorized: false },
-                    authTimeout: 9000
+                    authTimeout: 12000
                 },
                 nodemailer: {
                     service: 'gmail',
@@ -44,7 +44,7 @@ module.exports = new class mailController {
                     }
                 }
             };
-       }
+        }
 
         if ((req.body.email.includes("yahoo")) || (req.body.email.includes("ymail"))) {
             console.log('yahooooooooo')
@@ -56,7 +56,7 @@ module.exports = new class mailController {
                     port: 993,
                     tls: true,
                     tlsOptions: { rejectUnauthorized: false },
-                    authTimeout: 10000
+                    authTimeout: 12000
                 },
                 nodemailer: {
                     service: 'yahoo',
@@ -75,13 +75,20 @@ module.exports = new class mailController {
                 TokenController.createToken(req.body.email, JSON.stringify(config), function (error, result) {
 
                     if (error) {
+                        connection.end();
                         console.log(error)
                         res.status(402).send(error)
                     } else {
+                        connection.end();
+                        // //imaps.destroy();
+                        //ima
+                        // //imaps.end();
                         res.status(201).send({ token: result })
                     }
                 })
             }, function (error) {
+                //imaps.destroy();
+                //imaps.end();
                 console.log(error)
                 res.status(402).send(error)
             });
@@ -138,14 +145,19 @@ module.exports = new class mailController {
                                     }
                                     emails.push(email)
                                     if (emails.length == results.length) {
+                                        connection.end();
+                                        //imaps.destroy();
+                                        //imaps.end();
                                         res.status(201).send(emails)
                                     }
                                 }
                             }, function (error) {
+                                connection.end();
                                 console.log(error)
                                 res.status(402).send(error)
                             });
                         }, function (error) {
+                            connection.end();
                             console.log(error)
                             res.status(402).send(error)
                         });
@@ -239,14 +251,19 @@ module.exports = new class mailController {
                                     }
                                     emails.push(email)
                                     if (emails.length == results.length) {
+                                        //imaps.destroy();
+                                        //imap.end();
+                                        connection.end();
                                         res.status(201).send(emails)
                                     }
                                 }
 
                             }, function (error) {
+                                connection.end();
                                 res.status(402).send(error)
                             });
                         }, function (error) {
+                            connection.end();
                             res.status(402).send(error)
                         });
                     }, function (error) {
@@ -278,12 +295,17 @@ module.exports = new class mailController {
                                 if (err) {
                                     console.log(err);
                                 } else {
+                                    //imaps.destroy();
+                                    //imap.end();
+                                    connection.end();
                                     console.log("Marked as read!")
                                     res.status(201).send({ message: "Marked as seen" })
                                 }
                             });
                         })
                     }, function (error) {
+                        //imaps.destroy();
+                        //imap.end();
                         res.status(402).send(error)
                     });
 
@@ -310,12 +332,17 @@ module.exports = new class mailController {
                                 if (err) {
                                     console.log(err);
                                 } else {
+                                    //imaps.destroy();
+                                    //imap.end();
+                                    connection.end();
                                     console.log("Deleted")
                                     res.status(201).send({ message: "Deleted" })
                                 }
                             });
                         })
                     }, function (error) {
+                        //imaps.destroy();
+                        //imap.end();
                         res.status(402).send(error)
                     });
 
@@ -366,17 +393,28 @@ module.exports = new class mailController {
                                     }
                                     emails.push(email)
                                     if (emails.length == results.length) {
+                                        connection.end();
+                                        //imaps.destroy();
+                                        //imap.end();
                                         res.status(201).send(emails)
                                     }
                                 }
 
                             }, function (error) {
+                                connection.end();
+                                //imaps.destroy();
+                                //imap.end();
                                 res.status(402).send(error)
                             });
                         }, function (error) {
+                            connection.end();
+                            //imaps.destroy();
+                            //imap.end();
                             res.status(402).send(error)
                         });
                     }, function (error) {
+                        //imaps.destroy();
+                        //imap.end();
                         res.status(402).send(error)
                     });
 
@@ -386,7 +424,7 @@ module.exports = new class mailController {
 
     }
 
-    async numberOfUnseen(req,res){
+    async numberOfUnseen(req, res) {
 
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
@@ -408,18 +446,29 @@ module.exports = new class mailController {
                             };
                             return connection.search(searchCriteria, fetchOptions).then(function (results) {
                                 console.log(results.length)
-                                res.status(201).send({number_of_unseen : results.length})
+                                //imaps.destroy();
+                                //imap.end();
+                                connection.end();
+                                res.status(201).send({ number_of_unseen: results.length })
 
 
                             }, function (error) {
+                                connection.end();
+                                //imaps.destroy();
+                                //imap.end();
                                 res.status(402).send(error)
                             })
 
                         }, function (error) {
+                            connection.end();
+                            //imaps.destroy();
+                            //imap.end();
                             res.status(402).send(error)
                         })
 
                     }, function (error) {
+                        //imaps.destroy();
+                        //imap.end();
                         res.status(402).send(error)
                     })
 

@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
+import SunEditor from 'suneditor-react';
+import 'suneditor/dist/css/suneditor.min.css';
+// import {Editor, EditorState} from 'draft-js';
+// import SunEditor from 'suneditor-react';
 
 var loginInfo = {
   email: "",
@@ -454,35 +458,71 @@ class ComposeMail extends React.Component {
       })
   }
 
+  handleRecipients(recipients) {
+    this.state.recipient = []
+    this.state.recipient = recipients.split(',')
+    console.log(this.state.recipient)
+  }
+
 
   render() {
     var that = this;
     if (this.state.clicked) {
-      return (
-        <div className="modal-fade">
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3 className="modal-title">Compose Email</h3>
-              </div>
+      // return (
+      //   <div>
+      //     <form>
+      //     <p>
+      //       <h>To</h>
+      //       <input type="text" name="to" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.handleTos(e.target.value) }} />
+      //     </p>
+      //     </form>
+          
+      //   </div>
+      // )
 
+      //   console.log('clickeeeeeeeeeeeeeeeeed')
+        return (
 
-              <div className="modal-body">
-                <p>One fine body&hellip;</p>
-              </div>
-
-              <div className="modal-footer">
-                <button type="button" className="btn btn-outline-danger more" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Disgard</button>
-                <button type="button" className="btn btn-outline-info more"
-                  onClick={event => { this.handleSendClick(event) }}
-                >Send</button>
-
-              </div>
-            </div>
-          </div>
+          <div>
+          <SunEditor/>
         </div>
+          //  <div className="modal-fade">
+          //   <div className="modal-dialog modal-lg"> 
+          //     <div className="modal-content">
+          //        <div className="modal-header">
+          //         <h3 className="modal-title">Compose Email</h3>
+          //       </div> 
 
-      )
+
+          //        <div className="modal-body">
+          //          <p>
+          //         <p>
+          //           <p>To</p>
+          //           <input type="text" name="to" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.handleRecipients(e.target.value) }} />
+          //         </p>
+          //         <p>
+          //           <p>Subject</p>
+          //           <input type="text" name="subject" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.state.subject = e.target.value }} />
+          //         </p>
+          //         <p>
+          //           <p>Text</p>
+          //           {/* <input type="text" name="text" width="110%" heigth="100%" onChange={e => { this.state.text = e }} /> */}
+          //           <SunEditor />
+          //         </p>
+          //         </p>
+          //       </div>
+
+          //       <div className="modal-footer">
+          //         <button type="button" className="btn btn-outline-danger more" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Disgard</button>
+          //         <button type="button" className="btn btn-outline-info more"
+          //           onClick={event => { this.handleSendClick(event) }}
+          //         >Send</button>
+          //       </div> 
+          //      </div> 
+          //   </div>
+          // </div>
+
+       )
     } else {
       return (
         <div className="row">

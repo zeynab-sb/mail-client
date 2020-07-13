@@ -23,24 +23,50 @@ module.exports = new class mailController {
 
         console.log(typeof req.body.email)
 
-        var config = {
-            imap: {
-                user: req.body.email,
-                password: req.body.password,
-                host: 'imap.gmail.com',
-                port: 993,
-                tls: true,
-                tlsOptions: { rejectUnauthorized: false },
-                authTimeout: 3000
-            },
-            nodemailer: {
-                service: 'gmail',
-                auth: {
+        var config
+        if (req.body.email.includes("gmail")) {
+            console.log('gmaaaaaaaaaaaaaaaaaail')
+            config = {
+                imap: {
                     user: req.body.email,
-                    pass: req.body.password
+                    password: req.body.password,
+                    host: 'imap.gmail.com',
+                    port: 993,
+                    tls: true,
+                    tlsOptions: { rejectUnauthorized: false },
+                    authTimeout: 3000
+                },
+                nodemailer: {
+                    service: 'gmail',
+                    auth: {
+                        user: req.body.email,
+                        pass: req.body.password
+                    }
                 }
-            }
-        };
+            };
+        }
+
+        if ((req.body.email.includes("yahoo")) || (req.body.email.includes("ymail"))) {
+            console.log('yahooooooooo')
+            config = {
+                imap: {
+                    user: req.body.email,
+                    password: req.body.password,
+                    host: 'imap.mail.yahoo.com',
+                    port: 993,
+                    tls: true,
+                    tlsOptions: { rejectUnauthorized: false },
+                    authTimeout: 3000
+                },
+                nodemailer: {
+                    service: 'yahoo',
+                    auth: {
+                        user: req.body.email,
+                        pass: req.body.password
+                    }
+                }
+            };
+        }
 
         try {
 
@@ -238,17 +264,17 @@ module.exports = new class mailController {
                     console.log('heeeeeeeeeeeere')
                     console.log(token_check_result.imap)
 
-                   imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
-                    return connection.openBox('INBOX').then(function () {
-                    connection.addFlags(req.body.id, ['\\Seen'], function (err) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                console.log("Marked as read!")
-                                res.status(201).send({message: "Marked as seen"})
-                            }
-                        });
-                    })
+                    imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
+                        return connection.openBox('INBOX').then(function () {
+                            connection.addFlags(req.body.id, ['\\Seen'], function (err) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log("Marked as read!")
+                                    res.status(201).send({ message: "Marked as seen" })
+                                }
+                            });
+                        })
                     }, function (error) {
                         res.status(402).send(error)
                     });
@@ -258,7 +284,7 @@ module.exports = new class mailController {
         }
     }
 
-    async deleteEmail(req,res){
+    async deleteEmail(req, res) {
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
             TokenController.checkToken(bearerHeader, function (err, token_check_result) {
@@ -270,17 +296,17 @@ module.exports = new class mailController {
                     console.log('heeeeeeeeeeeere')
                     console.log(token_check_result.imap)
 
-                   imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
-                    return connection.openBox('INBOX').then(function () {
-                    connection.addFlags(req.body.id,  ['\Seen','\Deleted'], function (err) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                console.log("Deleted")
-                                res.status(201).send({message: "Deleted"})
-                            }
-                        });
-                    })
+                    imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
+                        return connection.openBox('INBOX').then(function () {
+                            connection.addFlags(req.body.id, ['\Seen', '\Deleted'], function (err) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log("Deleted")
+                                    res.status(201).send({ message: "Deleted" })
+                                }
+                            });
+                        })
                     }, function (error) {
                         res.status(402).send(error)
                     });
@@ -290,7 +316,7 @@ module.exports = new class mailController {
         }
     }
 
-    async getAllDeletedItems(req,res){
+    async getAllDeletedItems(req, res) {
 
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']

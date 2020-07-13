@@ -146,7 +146,7 @@ module.exports = new class mailController {
                         from: token_check_result.nodemailer.auth.user,
                         to: req.body.receivers,
                         subject: req.body.subject,
-                        text: req.body.text
+                        html: req.body.text
                     };
                     transport.sendMail(message, function (err, info) {
                         if (err) {

@@ -138,7 +138,7 @@ module.exports = new class mailController {
                                         from: results[j].parts[1].body.from[0],
                                         to: results[j].parts[1].body.to,
                                         subject: results[j].parts[1].body.subject[0],
-                                        date: results[j].parts[1].body.date[0],
+                                        date: results[j].parts[1].body.date[0].slice(0,25),
                                         seen: seenStatus,
                                         text: (results[j].parts[0].body),
                                     }
@@ -246,7 +246,7 @@ module.exports = new class mailController {
                                         from: results[j].parts[2].body.from[0],
                                         to: results[j].parts[2].body.to,
                                         subject: results[j].parts[2].body.subject[0],
-                                        date: results[j].parts[2].body.date[0],
+                                        date: results[j].parts[2].body.date[0].slice(0,25),
                                         //seen: seenStatus,
                                         text: (results[j].parts[1].body),
                                     }
@@ -354,7 +354,7 @@ module.exports = new class mailController {
         }
     }
 
-    
+
     async getAllDeletedItems(req, res) {
 
         if (req.headers['authorization']) {

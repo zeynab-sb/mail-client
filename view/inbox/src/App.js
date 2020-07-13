@@ -701,7 +701,7 @@ class MailboxLabels extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      inboxCount: 0, 
+      inboxCount: 0,
       sentCount: 0
     }
   }
@@ -710,12 +710,12 @@ class MailboxLabels extends React.Component {
     labels: [{
       id: 1,
       name: 'Inbox',
-      emailNumber: this.state.inboxCount
+      // emailNumber: this.state.inboxCount
     },
     {
       id: 3,
       name: 'Sent',
-      emailNumber: this.state.sentCount
+      //      emailNumber: this.state.sentCount
     }]
   };
 
@@ -771,7 +771,34 @@ class EmailList extends React.Component {
     this.forceUpdate();
   }
 
-  handleDeleteClick() {
+  handleDeleteClick(event) {
+
+    event.target.setAttribute("disabled", true);
+    console.log('clicked Send')
+    console.log(this.state.selectedEmail.id)
+    var api = "http://localhost:3001/api/mail/deleteEmail";
+
+    var request = {
+      method: 'post',
+      url: api,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${loginInfo.token}`
+      },
+      data: { "id": this.state.selectedEmail.id }
+
+    }
+    axios(request)
+      .then(response => {
+        console.log('this is response', response.data)
+        this.state.clicked = false
+        alert("Email Deleted")
+        this.props.onClick()
+      }).catch(error => {
+        console.log("error", error)
+        alert("Try Again")
+      })
+
 
   }
 
@@ -804,10 +831,30 @@ class EmailList extends React.Component {
       console.log('emmmaailill', this.state.results)
 
       return (
-        <div className="modal-footer">
-          <button type="button" className="btn btn-danger more" onClick={this.handleDeleteClick.bind(this)}>Delete</button>
-          <button type="button" className="btn btn-outline-info more" onClick={this.handleBackClick.bind(this)}>Back</button>
-          <p>{this.state.selectedEmail.text}</p>
+        <div>
+          <p>
+            <h style={{ color: 'btn-inf9', fontWeight: 'bold' }}> To: </h>
+            <h>{this.state.selectedEmail.to}</h>
+          </p>
+          <p>
+            <h style={{ color: 'btn-inf9', fontWeight: 'bold' }}>Subject: </h>
+            <h>{this.state.selectedEmail.subject}</h>
+          </p>
+          <p>
+            <h style={{ color: 'btn-inf9', fontWeight: 'bold' }}>Text: </h>
+            <d dangerouslySetInnerHTML={{ __html: this.state.selectedEmail.text }} />
+          </p>
+          <h>
+            <p>
+              <h style={{ color: 'btn-inf9', fontWeight: 'bold' }}>Date: </h>
+              <h>{this.state.selectedEmail.date}</h>
+            </p>
+            <button type="button" className="btn btn-danger more" onClick={this.handleDeleteClick.bind(this)}>Delete</button>
+          </h>
+          <h>
+            <button type="button" className="btn btn-outline-info more" onClick={this.handleBackClick.bind(this)}>Back</button>
+          </h>
+
         </div>
       )
 
@@ -927,11 +974,11 @@ class MainContainer extends React.Component {
     } else {
 
       for (var mail of this.props.emails) {
-        
+
         console.log('2array', array, 'len', length)
         this.props.emails.pop();
         console.log('3array', array, 'len', length)
-          array++
+        array++
       }
     }
 

@@ -403,7 +403,6 @@ class ComposeMail extends React.Component {
 
   render() {
     if (this.state.clicked) {
-<<<<<<< HEAD
       return (
         <div className="modal-fade">
           <div className="modal-dialog modal-lg">
@@ -465,10 +464,6 @@ class ComposeMail extends React.Component {
         //   </div>
         // </div>
       )
-=======
-      console.log('heeereee button')
-      return (<div>this is going to work!!!</div>)
->>>>>>> 2df86a9400095e40a7d0f6b15e13f7ab6432fa0c
     } else {
       //      console.log('heeereee nooottt button', loginInfo)
       return (

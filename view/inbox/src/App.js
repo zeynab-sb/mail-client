@@ -62,7 +62,6 @@ class App extends React.Component {
       )
     }
   }
-
 }
 
 
@@ -73,6 +72,7 @@ class NavigationBar extends React.Component {
         <img className="nav-logo" src="https://image.flaticon.com/icons/svg/262/262544.svg" width="36" height="36" />
         <dev className="navbar-brand">{this.props.title}</dev>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
+
           <ul className="navbar-nav ml-auto">
             <li className="nav-item active">
               <a className="nav-link" >{this.props.user} <span className="sr-only">(current)</span></a>
@@ -403,6 +403,7 @@ class ComposeMail extends React.Component {
 
   render() {
     if (this.state.clicked) {
+<<<<<<< HEAD
       return (
         <div className="modal-fade">
           <div className="modal-dialog modal-lg">
@@ -464,6 +465,10 @@ class ComposeMail extends React.Component {
         //   </div>
         // </div>
       )
+=======
+      console.log('heeereee button')
+      return (<div>this is going to work!!!</div>)
+>>>>>>> 2df86a9400095e40a7d0f6b15e13f7ab6432fa0c
     } else {
       //      console.log('heeereee nooottt button', loginInfo)
       return (

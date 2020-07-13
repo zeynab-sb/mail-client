@@ -4,11 +4,7 @@ const CircularJSON = require('circular-json');
 var Email = require('../model/email');
 var htmlToText = require('html-to-text');
 var jsdom = require('jsdom')
-const { JSDOM } = jsdom;
 const nodemailer = require('nodemailer');
-const { request } = require('../route');
-//var chilkat = require('@chilkat/ck-node11-win64')
-//const redisClient = require('../utils/tooRedis');
 module.exports = new class mailController {
     constructor() {
         this.models = {
@@ -18,6 +14,7 @@ module.exports = new class mailController {
 
 
 
+    // this api get user info and login
     async login(req, res) {
 
 
@@ -34,7 +31,7 @@ module.exports = new class mailController {
                     port: 993,
                     tls: true,
                     tlsOptions: { rejectUnauthorized: false },
-                    authTimeout: 12000
+                    authTimeout: 2000000
                 },
                 nodemailer: {
                     service: 'gmail',
@@ -56,7 +53,7 @@ module.exports = new class mailController {
                     port: 993,
                     tls: true,
                     tlsOptions: { rejectUnauthorized: false },
-                    authTimeout: 12000
+                    authTimeout: 2000000
                 },
                 nodemailer: {
                     service: 'yahoo',
@@ -98,6 +95,8 @@ module.exports = new class mailController {
             res.status(402).send(err)
         }
     }
+
+    //this api shows the inbox of a user
     async showInbox(req, res) {
 
         console.log('in inboooooooooooooooooox')
@@ -174,6 +173,7 @@ module.exports = new class mailController {
 
     }
 
+    //this api sends email
     async sendEmail(req, res) {
 
         if (req.headers['authorization']) {
@@ -210,6 +210,7 @@ module.exports = new class mailController {
 
     }
 
+    //this api gets sent items
     async getSentItems(req, res) {
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
@@ -276,6 +277,7 @@ module.exports = new class mailController {
 
     }
 
+
     async markUnseenAsSeen(req, res) {
 
         if (req.headers['authorization']) {
@@ -314,6 +316,7 @@ module.exports = new class mailController {
         }
     }
 
+    //this apis delete an email
     async deleteEmail(req, res) {
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
@@ -351,6 +354,7 @@ module.exports = new class mailController {
         }
     }
 
+    
     async getAllDeletedItems(req, res) {
 
         if (req.headers['authorization']) {

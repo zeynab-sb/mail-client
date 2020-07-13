@@ -1144,11 +1144,23 @@ class ComposeMail extends React.Component {
               <div className="modal-header">
                 <h3 className="modal-title">Compose Email</h3>
               </div>
-
-
               <div className="modal-body">
-                {<SunEditor />}
-              </div>
+                   <p>
+                  <p>
+                    <p>To</p>
+                    <input type="text" name="to" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.handleRecipients(e.target.value) }} />
+                  </p>
+                  <p>
+                    <p>Subject</p>
+                    <input type="text" name="subject" style={{ width: "390px", fontSize: 15 }} onChange={e => { this.state.subject = e.target.value }} />
+                  </p>
+                  <p>
+                    <p>Text</p>
+                    <input type="text" name="text" style={{ width: "390px", height: "90px" , fontSize: 15 }} onChange={e => { this.handleText(e.target.value) }} />
+                    {/* <SunEditor /> */}
+                  </p>
+                  </p>
+                </div>
 
               <div className="modal-footer">
                 <button type="button" className="btn btn-outline-danger more" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Disgard</button>

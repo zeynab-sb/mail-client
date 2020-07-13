@@ -108,6 +108,7 @@ class MailboxLabels extends React.Component {
     }]
   };
 
+
   render() {
     return (
       <ul className="list-group">
@@ -126,7 +127,6 @@ class MailboxLabels extends React.Component {
 
 
 class MailboxItem extends React.Component {
-  // Labels that we cvreate in Mail Boxes
   handleMailboxClick() {
     console.log('handleClick ' + this.props.id);
     this.props.onClick(this.props.id);
@@ -181,6 +181,7 @@ class EmailList extends React.Component {
     console.log('this is clicked....', id)
     console.log('results', this.state.results)
     for (var email of this.props.emails) {
+
       if (email.id == id)
         this.state.selectedEmail = email;
     }
@@ -219,7 +220,6 @@ class EmailList extends React.Component {
 
 
 class EmailItem extends React.Component {
-  // The methods in the previos Class should be moved to here
   handleEmailClick() {
     this.props.handleEmailClick(this.props.email.id);
   }
@@ -236,9 +236,6 @@ class EmailItem extends React.Component {
         <span>{this.props.email.subject}</span>
 
         <span className="ml-auto p-2">
-          {/* if(this.props.email.attachment){
-            <span className="fa fa-paperclip">&nbsp;&nbsp;</span>
-          } */}
           <span className="badge badge-default badge-pill">{this.props.email.time}</span>
         </span>
       </li>
@@ -246,7 +243,6 @@ class EmailItem extends React.Component {
     )
   }
 }
-
 
 class EmptyBox extends React.Component {
   render() {
@@ -258,12 +254,14 @@ class EmptyBox extends React.Component {
 }
 
 
+
 class MainContainer extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      selectedLabel: 1
+      selectedLabel: 1,
+      fethInbox: false
     }
   }
 
@@ -276,6 +274,7 @@ class MainContainer extends React.Component {
   handleUpdateMe() {
     this.props.onClick();
   }
+
 
   static defaultProps = {
     emails: [
@@ -325,19 +324,55 @@ class MainContainer extends React.Component {
 
   };
 
+  fetchInbox() {
+    console.log('fetching inboxxx')
+    var api = "http://192.168.112.243:3001/api/mail/showInbox";
+    var request = {
+      method: 'get',
+      url: api,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${loginInfo.token}`
+      }
+    }
+    axios(request)
+      .then(response => {
+        var count = 0;
+        console.log('resonse', response)
+        for (var mail of response.data) {
+          this.props.emails.push(mail)
+          count++
+
+          if (count == response.data.length) {
+            console.log('fetched alll')
+            this.setState({ fethInbox: true })
+            this.forceUpdate();
+          }
+        }
+
+      }).catch(error => {
+        console.log(error)
+      })
+  }
+
 
   render() {
+    this.fetchInbox();
     console.log("props: ", this.props);
     console.log("this is-> ", this.props.emails[0].labelId);
     const filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
 
     let content = null;
-    if (filteredEmails.length > 0) {
-      content = <EmailList emails={filteredEmails} />;
-    } else {
+    if (this.state.fethInbox) {
+      if (filteredEmails.length > 0) {
+        content = <EmailList emails={filteredEmails} />;
+      } else {
+        content = <EmptyBox />;
+      }
+    }
+    else {
       content = <EmptyBox />;
     }
-
     return (
       <div className="container">
         <ComposeMail onClick={this.handleUpdateMe.bind(this)} />
@@ -363,7 +398,8 @@ class ComposeMail extends React.Component {
       clicked: false,
       recipient: "shaghayeghtavakoli2@gmail.com",
       subject: "Send From UI",
-      text: "<p>This is a test</p>"
+      text: "<p>This is a test</p>",
+
     }
   }
 
@@ -378,9 +414,11 @@ class ComposeMail extends React.Component {
     this.forceUpdate();
   }
 
-  handleSendClick() {
+  handleSendClick(event) {
+    event.target.setAttribute("disabled", true);
+    console.log('clicked Send')
     var api = "http://192.168.112.243:3001/api/mail/sendEmail";
-    
+
     var request = {
       method: 'post',
       url: api,
@@ -388,8 +426,8 @@ class ComposeMail extends React.Component {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${loginInfo.token}`
       },
-      data: {"receivers":[this.state.recipient],"subject":this.state.subject,"text":this.state.text}
-    
+      data: { "receivers": [this.state.recipient], "subject": this.state.subject, "text": this.state.text }
+
     }
     axios(request)
       .then(response => {
@@ -398,12 +436,14 @@ class ComposeMail extends React.Component {
         alert("Email Sent")
         this.props.onClick()
       }).catch(error => {
-       // alert("Try Again")
+        console.log("error", error)
+        alert("Try Again")
       })
   }
 
 
   render() {
+    var that = this;
     if (this.state.clicked) {
       return (
         <div className="modal-fade">
@@ -418,56 +458,19 @@ class ComposeMail extends React.Component {
                 <p>One fine body&hellip;</p>
               </div>
 
-
-
               <div className="modal-footer">
-                <button type="button" className="btn btn-outline-danger" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Disgard</button>
-                <button type="button" className="btn btn-outline-info" onClick={this.handleSendClick.bind(this)}>Send</button>
+                <button type="button" className="btn btn-outline-danger more" data-dismiss="modal" onClick={this.handleCloseClick.bind(this)}>Disgard</button>
+                <button type="button" className="btn btn-outline-info more"
+                  onClick={event => { this.handleSendClick(event) }}
+                >Send</button>
+
               </div>
             </div>
           </div>
         </div>
-        // <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        //   <div className="modal-dialog" role="document">
-        //     <div className="modal-content">
-        //       <div className="modal-header">
-        //         <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
-        //         <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-        //           <span aria-hidden="true">&times;</span>
-        //         </button>
-        //       </div>
-        //       <div className="modal-body">
 
-        //       </div>
-        //       <div className="modal-footer">
-        //         <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-        //         <button type="button" className="btn btn-primary">Save changes</button>
-        //       </div>
-        //     </div>
-        //   </div>
-        // </div>
-        // <div class="modal" tabindex="-1" role="dialog">
-        //   <div class="modal-dialog" role="document">
-        //     <div class="modal-content">
-        //       <div class="modal-header">
-        //         <h5 class="modal-title">Modal title</h5>
-        //         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        //           <span aria-hidden="true">&times;</span>
-        //         </button>
-        //       </div>
-        //       <div class="modal-body">
-        //         <p>Modal body text goes here.</p>
-        //       </div>
-        //       <div class="modal-footer">
-        //         <button type="button" class="btn btn-primary">Save changes</button>
-        //       </div>
-        //       <div className="btn btn-info btn-block more" onClick={this.handleLabelClick.bind(this)} >Close</div>
-        //     </div>
-        //   </div>
-        // </div>
       )
     } else {
-      //      console.log('heeereee nooottt button', loginInfo)
       return (
         <div className="row">
           <div className="col-12">
@@ -493,33 +496,8 @@ class Login extends Component {
     }
   }
 
-  // login () {
-  //   console.log("state: ", JSON.stringify(this.state))
-  //   // var api = "http://localhost:3000/api/mail/login";
-  //   var api = "http://192.168.96.191:3000/api/user/login";
-  //   var request = {
-  //     method: 'post',
-  //     url: api,
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     data: { "username": this.state.email, "password": this.state.password }
-  //   }
-  //   axios(request)
-  //     .then(response => {
-  //       console.log('hhhhhhhhhhhhhhhhhhhhhhhh')
-  //       console.log(response.data)
-  //       loginInfo.email = this.state.email;
-  //       loginInfo.token = response.data.token;
-  //       console.log('loginIngo', JSON.stringify(loginInfo))
-  //     }).catch(err => {
-
-  //       console.log(JSON.stringify(loginInfo))
-  //       console.log("here is what im rejecting:", err)
-  //     })
-  // }
-
-  handleSubmitClick() {
+  handleSubmitClick(event) {
+    event.target.setAttribute("disabled", true);
     console.log("Handling Submit...")
     this.props.onClick();
   }
@@ -543,7 +521,7 @@ class Login extends Component {
           <input type="text" className="form-control" placeholder="Enter password"
             onChange={e => loginInfo.password = e.target.value} />
         </div>
-        <button type="button" className="btn btn-info btn-block more" onClick={this.handleSubmitClick.bind(this)}>Login</button>
+        <button type="button" className="btn btn-info btn-block more" onClick={event => { this.handleSubmitClick(event) }}>Login</button>
       </form>
 
     );

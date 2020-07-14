@@ -675,7 +675,7 @@ class ComposeMail extends React.Component {
   }
 
   handleText(text) {
-    this.state.text = "<p>" + text + "</p>"
+    this.state.text = "<p>" + text + "</p> <hr></p>Sent from Etoile Email Manager<p>"
   }
 
 

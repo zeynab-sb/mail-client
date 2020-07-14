@@ -752,7 +752,7 @@ class MailboxLabels extends React.Component {
 
   render() {
     return (
-      <ul className="list-group">
+      <ul className="list-group more">
         {this.props.labels.map((label) => (
           <MailboxItem
             key={label.id}
@@ -814,7 +814,7 @@ class EmailList extends React.Component {
     console.log('set back to true')
     this.state.backClicked = true;
     this.state.clicked = false;
-    // this.props.onClick();
+    this.props.onSync();
     this.forceUpdate();
   }
 
@@ -930,8 +930,9 @@ class EmailList extends React.Component {
     } else {
 
       return (
+
         <div>
-          <div className="list-group">
+          <div className="list-group more">
             {/* EmailItem creation: */}
             {this.props.emails.map((email) => (
               <EmailItem
@@ -965,6 +966,7 @@ class EmailList extends React.Component {
 class EmailItem extends React.Component {
   handleEmailClick(event) {
     event.target.setAttribute("disabled", true);
+
     this.props.handleEmailClick(this.props.email.id);
     // this.forceUpdate();
   }
@@ -1054,22 +1056,23 @@ class MainContainer extends React.Component {
 
   emptyEmailArray() {
     this.state.fetchedInbox = false;
-    this.setState({fetchedSent: false});
-    var length = this.props.emails.filter(Boolean).length
-    console.log('length', length)
+    this.setState({ fetchedSent: false });
+
+    var length = this.props.emails.length //.filter(e => e.labelId & e.labelId == this.state.selectedLabel).length
+    console.log('length', length, this.props.emails)
     var count = 0
     if (length != 0) {
-      for (var mail of this.props.emails) {
-        console.log('legn', length)
-        console.log('pop', mail)
-        this.props.emails.pop();
-        count++
-        if (count == length) {
-          console.log('syncing again')
-          this.props.onClick();
-          this.syncMailbox();
-        }
-      }
+      //for (var mail of this.props.emails) {
+      console.log('legn -- >>', length)
+      //console.log('pop', mail)
+      this.props.emails.splice(0, length);
+      // count++
+      // if (count == length) {
+      console.log('syncing again')
+      this.props.onClick();
+      this.syncMailbox();
+      // }
+      //}
     }
   }
 
@@ -1218,19 +1221,20 @@ class MainContainer extends React.Component {
   render() {
     let content = null;
     if (this.state.fetchedInbox && this.state.fetchedSent) {
+      var emails = this.props.emails;
       console.log('this is state value of mailbox', this.state.selectedLabel)
       var filteredEmails; //= this.props.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
       if (this.state.selectedLabel == 1) {
-        filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == 1);
+        filteredEmails = emails.filter(e => e.labelId & e.labelId == 1);
         console.log('sellect inbox', filteredEmails)
       } else if (this.state.selectedLabel == 3) {
-        filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == 3);
+        filteredEmails = emails.filter(e => e.labelId & e.labelId == 3);
         console.log('seleeecctt sent', filteredEmails)
       }
 
       if (filteredEmails.length = this.state.mailCount) {
         // content = <EmailList emails={filteredEmails} onClick={this.emptyEmailArray.bind(this)} />;
-        content = <EmailList emails={filteredEmails} onClick={this.emptyEmailArray.bind(this)} />;
+        content = <EmailList emails={filteredEmails} onClick={this.emptyEmailArray.bind(this)} onSync={this.emptyEmailArray.bind(this)} />;
       } else {
         content = <EmptyBox />;
       }
@@ -1240,9 +1244,9 @@ class MainContainer extends React.Component {
     }
     return (
       <div className="container">
-        <ComposeMail onClick={this.handleUpdateMe.bind(this)} />
-        <hr />
-        <SyncMail onClick={this.emptyEmailArray.bind(this)} />
+
+        <SyncMail onSync={this.emptyEmailArray.bind(this)} />
+        <ComposeMail onClick={this.handleUpdateMe.bind(this)} onSync={this.emptyEmailArray.bind(this)} />
         <hr />
         <div className="row">
           <div className="col-12 col-sm-12 col-md-3 col-lg-2">
@@ -1268,26 +1272,20 @@ class SyncMail extends React.Component {
     }
   }
 
-  handleClick() {
-    this.props.onClick()
+  handleSyncClick() {
+    this.props.onSync()
   }
 
   render() {
     return (
-      <div className="row">
-        <div className="col-12">
-          <div className="btn-info btn pull-right" data-toggle="modal" data-target="#myModal" onClick={this.handleClick.bind(this)} >
-            <i className="fa fa-refresh" ></i> Sync
-            </div>
 
-        </div>
+      <div className="btn-primary btn pull-left col-1 more" data-toggle="modal" data-target="#myModal" onClick={this.handleSyncClick.bind(this)} >
+        <i className="fa fa-refresh" ></i>
       </div>
+
     )
 
   }
-
-
-
 
 }
 
@@ -1400,10 +1398,10 @@ class ComposeMail extends React.Component {
         <div className="row">
           <div className="col-12">
             {/* <div className="btn btn-info btn-block" onClick={this.handleLabelClick.bind(this)} > */}
-            <div className="btn btn-info btn-block more" data-toggle="modal" data-target="#myModal" onClick={this.handleLabelClick.bind(this)} >
+            <div className="btn btn-info btn-block more pull-right col-13" data-toggle="modal" data-target="#myModal" onClick={this.handleLabelClick.bind(this)} >
 
               <i className="fa fa-edit"></i> Compose
-            </div>
+        </div>
 
           </div>
         </div>

@@ -238,6 +238,7 @@ class EmailList extends React.Component {
         this.state.deleteClicked = false;
         this.state.clicked = false
         // this.props.onClick();
+        this.props.onSync();
         this.forceUpdate();
         alert("Email Deleted")
       }).catch(error => {

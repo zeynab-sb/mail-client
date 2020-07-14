@@ -12,8 +12,10 @@ const path = require("path")
             {
                 secretkey:"secret-key"
             },       
-        redis : "192.168.97.194",
-        redis_port: 6379       
+//        redis : "192.168.97.194",
+       redis : "localhost",
+
+redis_port: 6379       
     }   
 
 module.exports = configJson;

@@ -1,9 +1,5 @@
 const imaps = require('imap-simple');
 const TokenController = require('../controller/tokenController');
-const CircularJSON = require('circular-json');
-var Email = require('../model/email');
-var htmlToText = require('html-to-text');
-var jsdom = require('jsdom')
 const nodemailer = require('nodemailer');
 module.exports = new class mailController {
     constructor() {
@@ -16,13 +12,8 @@ module.exports = new class mailController {
 
     // this api get user info and login
     async login(req, res) {
-
-
-        console.log(typeof req.body.email)
-
         var config
         if (req.body.email.includes("gmail")) {
-            console.log('gmaaaaaaaaaaaaaaaaaail')
             config = {
                 imap: {
                     user: req.body.email,
@@ -44,7 +35,6 @@ module.exports = new class mailController {
         }
 
         if ((req.body.email.includes("yahoo")) || (req.body.email.includes("ymail"))) {
-            console.log('yahooooooooo')
             config = {
                 imap: {
                     user: req.body.email,
@@ -77,15 +67,10 @@ module.exports = new class mailController {
                         res.status(402).send(error)
                     } else {
                         connection.end();
-                        // //imaps.destroy();
-                        //ima
-                        // //imaps.end();
                         res.status(201).send({ token: result })
                     }
                 })
             }, function (error) {
-                //imaps.destroy();
-                //imaps.end();
                 console.log(error)
                 res.status(402).send(error)
             });
@@ -98,9 +83,6 @@ module.exports = new class mailController {
 
     //this api shows the inbox of a user
     async showInbox(req, res) {
-
-        console.log('in inboooooooooooooooooox')
-
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
             TokenController.checkToken(bearerHeader, function (err, token_check_result) {
@@ -109,9 +91,6 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    // console.log('heeeeeeeeeeeere')
-                    // console.log(token_check_result.imap)
-
                     imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
                         return connection.openBox('INBOX').then(function () {
                             var searchCriteria = [
@@ -125,10 +104,7 @@ module.exports = new class mailController {
 
                             var emails = []
                             return connection.search(searchCriteria, fetchOptions).then(function (results) {
-
-                                console.log('afteeeeeeeeeeeeeer serach')
                                 for (var j = 0; j < results.length; j++) {
-                                    console.log(results[j])
                                     var seenStatus = false
                                     if (results[j].attributes.flags[0] == '\\Seen') {
                                         seenStatus = true
@@ -145,9 +121,7 @@ module.exports = new class mailController {
                                     emails.push(email)
                                     if (emails.length == results.length) {
                                         connection.end();
-                                        //imaps.destroy();
-                                        //imaps.end();
-                                        res.status(201).send(emails)
+                                        res.status(201).send(emails.reverse())
                                     }
                                 }
                             }, function (error) {
@@ -184,9 +158,6 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    // console.log('heeeeeeeeeeeere')
-                    // console.log(token_check_result.nodemailer)
-                    // console.log(token_check_result.nodemailer.auth.user)
                     let transport = nodemailer.createTransport(token_check_result.nodemailer);
                     const message = {
                         from: token_check_result.nodemailer.auth.user,
@@ -220,9 +191,6 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    console.log('heeeeeeeeeeeere')
-                    console.log(token_check_result.imap)
-
                     imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
 
                         return connection.openBox('[Gmail]/Sent Mail').then(function () {
@@ -237,23 +205,16 @@ module.exports = new class mailController {
                             var emails = []
                             return connection.search(searchCriteria, fetchOptions).then(function (results) {
                                 for (var j = 0; j < results.length; j++) {
-                                    // var seenStatus = true
-                                    // if (results[j].attributes.flags.length == 0) {
-                                    //     seenStatus = false
-                                    // }
                                     var email = {
                                         id: results[j].attributes.uid,
                                         from: results[j].parts[2].body.from[0],
                                         to: results[j].parts[2].body.to,
                                         subject: results[j].parts[2].body.subject[0],
                                         date: results[j].parts[2].body.date[0].slice(0,25),
-                                        //seen: seenStatus,
                                         text: (results[j].parts[1].body),
                                     }
                                     emails.push(email)
                                     if (emails.length == results.length) {
-                                        //imaps.destroy();
-                                        //imap.end();
                                         connection.end();
                                         res.status(201).send(emails)
                                     }
@@ -278,6 +239,7 @@ module.exports = new class mailController {
     }
 
 
+    //this api marks unseen email as seen
     async markUnseenAsSeen(req, res) {
 
         if (req.headers['authorization']) {
@@ -288,17 +250,12 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    console.log('heeeeeeeeeeeere')
-                    console.log(token_check_result.imap)
-
                     imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
                         return connection.openBox('INBOX').then(function () {
                             connection.addFlags(req.body.id, ['\\Seen'], function (err) {
                                 if (err) {
                                     console.log(err);
                                 } else {
-                                    //imaps.destroy();
-                                    //imap.end();
                                     connection.end();
                                     console.log("Marked as read!")
                                     res.status(201).send({ message: "Marked as seen" })
@@ -306,8 +263,6 @@ module.exports = new class mailController {
                             });
                         })
                     }, function (error) {
-                        //imaps.destroy();
-                        //imap.end();
                         res.status(402).send(error)
                     });
 
@@ -316,7 +271,7 @@ module.exports = new class mailController {
         }
     }
 
-    //this apis delete an email
+    //this api deletes an email
     async deleteEmail(req, res) {
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
@@ -335,8 +290,6 @@ module.exports = new class mailController {
                                 if (err) {
                                     console.log(err);
                                 } else {
-                                    //imaps.destroy();
-                                    //imap.end();
                                     connection.end();
                                     console.log("Deleted")
                                     res.status(201).send({ message: "Deleted" })
@@ -344,8 +297,6 @@ module.exports = new class mailController {
                             });
                         })
                     }, function (error) {
-                        //imaps.destroy();
-                        //imap.end();
                         res.status(402).send(error)
                     });
 
@@ -365,9 +316,6 @@ module.exports = new class mailController {
                         success: false
                     });
                 } else {
-                    console.log('heeeeeeeeeeeere')
-                    console.log(token_check_result.imap)
-
                     imaps.connect({ imap: token_check_result.imap }).then(function (connection) {
 
                         return connection.openBox('Sent Mail').then(function () {
@@ -382,43 +330,30 @@ module.exports = new class mailController {
                             var emails = []
                             return connection.search(searchCriteria, fetchOptions).then(function (results) {
                                 for (var j = 0; j < results.length; j++) {
-                                    // var seenStatus = true
-                                    // if (results[j].attributes.flags.length == 0) {
-                                    //     seenStatus = false
-                                    // }
                                     var email = {
                                         id: results[j].attributes.uid,
                                         from: results[j].parts[2].body.from[0],
                                         to: results[j].parts[2].body.to,
                                         subject: results[j].parts[2].body.subject[0],
                                         date: results[j].parts[2].body.date[0],
-                                        //seen: seenStatus,
                                         text: (results[j].parts[1].body),
                                     }
                                     emails.push(email)
                                     if (emails.length == results.length) {
                                         connection.end();
-                                        //imaps.destroy();
-                                        //imap.end();
                                         res.status(201).send(emails)
                                     }
                                 }
 
                             }, function (error) {
                                 connection.end();
-                                //imaps.destroy();
-                                //imap.end();
                                 res.status(402).send(error)
                             });
                         }, function (error) {
                             connection.end();
-                            //imaps.destroy();
-                            //imap.end();
                             res.status(402).send(error)
                         });
                     }, function (error) {
-                        //imaps.destroy();
-                        //imap.end();
                         res.status(402).send(error)
                     });
 
@@ -428,6 +363,7 @@ module.exports = new class mailController {
 
     }
 
+    //this api gets number of unseen emails
     async numberOfUnseen(req, res) {
 
         if (req.headers['authorization']) {
@@ -449,30 +385,21 @@ module.exports = new class mailController {
                                 markSeen: false
                             };
                             return connection.search(searchCriteria, fetchOptions).then(function (results) {
-                                console.log(results.length)
-                                //imaps.destroy();
-                                //imap.end();
                                 connection.end();
                                 res.status(201).send({ number_of_unseen: results.length })
 
 
                             }, function (error) {
                                 connection.end();
-                                //imaps.destroy();
-                                //imap.end();
                                 res.status(402).send(error)
                             })
 
                         }, function (error) {
                             connection.end();
-                            //imaps.destroy();
-                            //imap.end();
                             res.status(402).send(error)
                         })
 
                     }, function (error) {
-                        //imaps.destroy();
-                        //imap.end();
                         res.status(402).send(error)
                     })
 

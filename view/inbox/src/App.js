@@ -1023,7 +1023,7 @@ class EmptyBox extends React.Component {
 
 class LoadingBox extends React.Component {
   render() {
-    return (<p>Please Be Patient ... </p>)
+    return (<center><p>Please Be Patient ...</p></center>)
   }
 }
 

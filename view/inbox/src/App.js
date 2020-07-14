@@ -766,7 +766,7 @@ class MailboxLabels extends React.Component {
             id={label.id}
             label={label}
             onClick={this.props.onChangeMailbox.bind(this)}
-            onUpdate={this.props.onClick.bind(this)}
+            // onUpdate={this.props.onClick.bind(this)}
           />
         ))}
       </ul>
@@ -778,7 +778,7 @@ class MailboxItem extends React.Component {
   handleMailboxClick() {
     console.log('handleClick ' + this.props.id);
     this.props.onClick(this.props.id);
-    this.props.onUpdate()
+    // this.props.onUpdate()
   }
 
   render() {

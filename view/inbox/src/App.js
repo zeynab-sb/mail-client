@@ -1054,8 +1054,9 @@ class MainContainer extends React.Component {
 
   emptyEmailArray() {
     this.state.fetchedInbox = false;
-    this.state.fetchedSent = false;
-    var length = this.props.emails.length
+    this.setState({fetchedSent: false});
+    var length = this.props.emails.filter(Boolean).length
+    console.log('length', length)
     var count = 0
     if (length != 0) {
       for (var mail of this.props.emails) {
@@ -1241,13 +1242,13 @@ class MainContainer extends React.Component {
       <div className="container">
         <ComposeMail onClick={this.handleUpdateMe.bind(this)} />
         <hr />
-        <SyncMail onClick={this.emptyEmailArray(this)}/>
+        <SyncMail onClick={this.emptyEmailArray.bind(this)} />
         <hr />
         <div className="row">
           <div className="col-12 col-sm-12 col-md-3 col-lg-2">
             {/* <MailboxLabels onChangeMailbox={this.handleChangeMailbox.bind(this)} onClick={this.emptyEmailArray.bind(this)} /> */}
-            <MailboxLabels onChangeMailbox={this.handleChangeMailbox.bind(this)}/>
-          
+            <MailboxLabels onChangeMailbox={this.handleChangeMailbox.bind(this)} />
+
           </div>
           <div className="col-12 col-sm-12 col-md-9 col-lg-10">
             {content}
@@ -1258,7 +1259,7 @@ class MainContainer extends React.Component {
   }
 }
 
-class SyncMail extends React.Component{
+class SyncMail extends React.Component {
 
   constructor(props) {
     super(props);
@@ -1268,36 +1269,25 @@ class SyncMail extends React.Component{
   }
 
   handleClick() {
-    //   this.state.clicked = true
-    // this.forceUpdate();
-    this.setState({ clicked: true })
+    this.props.onClick()
   }
 
   render() {
-    var that = this;
-    if (this.state.clicked) {
-
-      this.props.onClick()
-      // return (
-      // )
-    } else {
-      return (
-        <div className="row">
-          <div className="col-12">
-            {/* <div className="btn btn-info btn-block" onClick={this.handleLabelClick.bind(this)} > */}
-            <div className= "btn-info btn pull-right" data-toggle="modal" data-target="#myModal" onClick={this.handleClick.bind(this)} >
-
-            <i class="fa fa-refresh" ></i> Sync
+    return (
+      <div className="row">
+        <div className="col-12">
+          <div className="btn-info btn pull-right" data-toggle="modal" data-target="#myModal" onClick={this.handleClick.bind(this)} >
+            <i className="fa fa-refresh" ></i> Sync
             </div>
 
-          </div>
         </div>
-      )
-    }
+      </div>
+    )
+
   }
 
 
-  
+
 
 }
 

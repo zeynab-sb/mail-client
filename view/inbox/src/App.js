@@ -1241,6 +1241,8 @@ class MainContainer extends React.Component {
       <div className="container">
         <ComposeMail onClick={this.handleUpdateMe.bind(this)} />
         <hr />
+        <SyncMail onClick={this.emptyEmailArray(this)}/>
+        <hr />
         <div className="row">
           <div className="col-12 col-sm-12 col-md-3 col-lg-2">
             {/* <MailboxLabels onChangeMailbox={this.handleChangeMailbox.bind(this)} onClick={this.emptyEmailArray.bind(this)} /> */}
@@ -1254,6 +1256,49 @@ class MainContainer extends React.Component {
       </div>
     )
   }
+}
+
+class SyncMail extends React.Component{
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      clicked: false,
+    }
+  }
+
+  handleClick() {
+    //   this.state.clicked = true
+    // this.forceUpdate();
+    this.setState({ clicked: true })
+  }
+
+  render() {
+    var that = this;
+    if (this.state.clicked) {
+
+      this.props.onClick()
+      // return (
+      // )
+    } else {
+      return (
+        <div className="row">
+          <div className="col-12">
+            {/* <div className="btn btn-info btn-block" onClick={this.handleLabelClick.bind(this)} > */}
+            <div className= "btn-info btn pull-right" data-toggle="modal" data-target="#myModal" onClick={this.handleClick.bind(this)} >
+
+            <i class="fa fa-refresh" ></i> Sync
+            </div>
+
+          </div>
+        </div>
+      )
+    }
+  }
+
+
+  
+
 }
 
 class ComposeMail extends React.Component {

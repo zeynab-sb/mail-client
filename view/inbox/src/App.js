@@ -1,16 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import SunEditor from 'suneditor-react/webpack.config';
-import 'suneditor/dist/css/suneditor.min.css';
 import './App.css';
-// import SunEditor from 'suneditor-react';
-// import 'suneditor/dist/css/suneditor.min.css';
-import 'suneditor/dist/css/suneditor.min.css'
-// import 'suneditor/assets/css/suneditor.css'
-// import 'suneditor/assets/css/suneditor-contents.css'
-import suneditor from 'suneditor'
-// import {Editor, EditorState} from 'draft-js';
-// import SunEditor from 'suneditor-react';
+import SunEditor, { buttonList } from "suneditor-react";
+import 'suneditor/dist/css/suneditor.min.css';
+
 
 var loginInfo = {
   email: "",
@@ -766,7 +759,7 @@ class MailboxLabels extends React.Component {
             id={label.id}
             label={label}
             onClick={this.props.onChangeMailbox.bind(this)}
-            // onUpdate={this.props.onClick.bind(this)}
+          // onUpdate={this.props.onClick.bind(this)}
           />
         ))}
       </ul>
@@ -970,17 +963,21 @@ class EmailList extends React.Component {
 }
 
 class EmailItem extends React.Component {
-  handleEmailClick() {
+  handleEmailClick(event) {
+    event.target.setAttribute("disabled", true);
     this.props.handleEmailClick(this.props.email.id);
     // this.forceUpdate();
   }
 
   render() {
+    var label_one = (this.props.email.labelId == 1) ? "From: " : "To: ";
+    var label_two = (this.props.email.labelId == 1) ? this.props.email.from.split('<')[0] : this.props.email.to[0];
+
     if (this.props.email.seen) {
       return (
-        <li className="list-group-item d-flex" onClick={this.handleEmailClick.bind(this)}>
+        <li className="list-group-item d-flex" onClick={(event) => { this.handleEmailClick(event) }}>
 
-          <div className="col-4">From: {this.props.email.from.split('<')[0]}</div>
+          <div className="col-4">{label_one}{label_two}</div>
           <div classNamess="col-8">Subject: {this.props.email.subject}</div>
 
           <span className="ml-auto p-2">
@@ -995,7 +992,7 @@ class EmailItem extends React.Component {
       return (
         <li className="list-group-item d-flex  list-group-item-info" onClick={this.handleEmailClick.bind(this)}>
 
-          <div className="col-4">From: {this.props.email.from.split('<')[0]}</div>
+          <div className="col-4">{label_one}{label_two}</div>
           <div classNamess="col-8">Subject: {this.props.email.subject}</div>
 
           <span className="ml-auto p-2">
@@ -1268,7 +1265,10 @@ class ComposeMail extends React.Component {
       recipient: [],
       subject: "",
       text: "",
+      // editorState: EditorState.createEmpty()
     }
+    // this.onChange = editorState => this.setState({ editorState });
+
   }
 
   handleLabelClick() {

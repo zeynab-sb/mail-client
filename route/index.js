@@ -1,4 +1,4 @@
-
+//in this class route of apis has defined
 const express = require("express")
 const app = express()
 const mailController = require('../controller/mailController');

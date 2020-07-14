@@ -216,7 +216,7 @@ module.exports = new class mailController {
                                     emails.push(email)
                                     if (emails.length == results.length) {
                                         connection.end();
-                                        res.status(201).send(emails)
+                                        res.status(201).send(emails.reverse())
                                     }
                                 }
 

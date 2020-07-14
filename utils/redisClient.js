@@ -1,3 +1,4 @@
+//in this class we handle connection to redis
 const redis = require('redis');
 const config = require('../config');
 let redisClient = redis.createClient({port: config.redis_port, host: config.redis});

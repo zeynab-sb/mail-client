@@ -1,3 +1,4 @@
+//this file contains config for redis and server
 const path = require("path")
 
     let configJson = {

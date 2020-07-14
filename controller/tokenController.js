@@ -1,16 +1,10 @@
 var njwt = require('njwt')
-//var express = require('express')
 config = require("../config")
 const redisClient = require('../utils/redisClient');
-// var app = express()
-// const validator = require('../controllers/validators/token')
-// const log4js = require('log4js')
-// var logger = log4js.getLogger('tokenLog')
-// // app.use(time.init)
-
 
 module.exports = {
 
+    //in this method we create token for a user
     createToken(email,imapObject,callback) {
         console.log("in create token");
         var claims = {
@@ -19,13 +13,12 @@ module.exports = {
             iat: new Date(),
         }
         var jwt = njwt.create(claims, config.jwt.secretkey);
-        jwt.setExpiration(new Date().getTime()+ (24*60*60*1000)); // 24 hour from now
+        jwt.setExpiration(new Date().getTime()+ (24*60*60*1000));
         var tkn = jwt.compact();
         console.log('token is :' +tkn)
         var key = tkn;
         console.log(typeof key)
         var value = imapObject;
-        //console.log(JSON.parse(value))
         redisClient.set(key,value,(err,result)=>{
             console.log(err)
             console.log(result)
@@ -37,7 +30,6 @@ module.exports = {
                 callback(error,null)
                 throw error;
             }
-            //res(result)
             console.log('GET result ->' + result);
             callback(null,tkn)
 
@@ -47,6 +39,7 @@ module.exports = {
     },
 
 
+    //in this method we check token to authenticate a user
     checkToken(bearerHeader, callback) {
 
         var token;
@@ -71,32 +64,10 @@ module.exports = {
                         callback(error,null)
                         throw error;
                     }
-                    //res(result)
                     console.log('GET result ->' + JSON.parse(result));
                     callback(null,JSON.parse(result))
         
                 });
-                // Token.findOne({
-                //     where: {
-                //         token: token,
-                //         status: true
-                //     }
-
-                // }).then(function (item) {
-
-                //     if (item) {
-                //         callback(null, item)
-
-
-                //     } else {
-                //         callback("token is not valid", null)
-
-
-                //     }
-
-
-                // })
-
             }
 
         })

@@ -355,7 +355,7 @@ var loginInfo = {
 //     ]
 //   };
 
-//   synceMailbox() {
+//   syncMailbox() {
 //     // var emails = [];
 //     // this.setState({ fetchedSent: false, fetchedInbox: false })
 //     // this.state.fetchedInbox = false;
@@ -462,7 +462,7 @@ var loginInfo = {
 //       }
 //     }
 //     else {
-//       this.synceMailbox();
+//       this.syncMailbox();
 //       content = <LoadingBox />
 //     }
 //     return (
@@ -705,12 +705,15 @@ class MailboxLabels extends React.Component {
       sentCount: 0
     }
   }
+  componentWillUpdate() {
+    this.syncMailCount();
+  }
   componentWillMount() {
     this.syncMailCount();
   }
+
   syncMailCount() {
     var apiUnseen = 'http://192.168.112.243:3001/api/mail/numberOfUnseen';
-
     var requestUnseen = {
       method: 'get',
       url: apiUnseen,
@@ -762,7 +765,9 @@ class MailboxLabels extends React.Component {
             key={label.id}
             id={label.id}
             label={label}
-            onClick={this.props.onChangeMailbox.bind(this)} />
+            onClick={this.props.onChangeMailbox.bind(this)}
+            onUpdate={this.props.onClick.bind(this)}
+          />
         ))}
       </ul>
     )
@@ -773,6 +778,7 @@ class MailboxItem extends React.Component {
   handleMailboxClick() {
     console.log('handleClick ' + this.props.id);
     this.props.onClick(this.props.id);
+    this.props.onUpdate()
   }
 
   render() {
@@ -815,6 +821,7 @@ class EmailList extends React.Component {
     console.log('set back to true')
     this.state.backClicked = true;
     this.state.clicked = false;
+    // this.props.onClick();
     this.forceUpdate();
   }
 
@@ -840,9 +847,9 @@ class EmailList extends React.Component {
         console.log('this is response', response.data)
         this.state.deleteClicked = false;
         this.state.clicked = false
+        // this.props.onClick();
         this.forceUpdate();
         alert("Email Deleted")
-        //this.props.onClick()
       }).catch(error => {
         console.log("error", error)
         alert("Try Again")
@@ -858,13 +865,33 @@ class EmailList extends React.Component {
     for (var email of this.props.emails) {
       console.log('this is in the for')
       if (email) {
-        console.log('this is in if for check email')
         if (email.id == id) {
           console.log('this is in if for select email', email)
+          var api = "http://192.168.112.243:3001/api/mail/markUnseenAsSeen";
+          var request = {
+            method: 'post',
+            url: api,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${loginInfo.token}`
+            },
+            data: { "id": email.mailID }
+
+          }
           this.state.selectedEmail = email
           this.state.clicked = true;
-          console.log('this is the whole state', this.state)
-          this.forceUpdate();
+          axios(request)
+            .then(response => {
+              console.log('this is response', response.data)
+              console.log('this is email', email)
+
+              console.log('this is the whole state', this.state)
+              // this.props.onClick();
+              this.forceUpdate();
+            }).catch(error => {
+              console.log("error", error)
+              alert("Try Again")
+            })
         }
       }
     }
@@ -949,22 +976,36 @@ class EmailItem extends React.Component {
   }
 
   render() {
-    return (
-      <li className="list-group-item d-flex justify-content-start" onClick={this.handleEmailClick.bind(this)}>
-        <div className="checkbox">
-          <input type="checkbox" />
-        </div>
+    if (this.props.email.seen) {
+      return (
+        <li className="list-group-item d-flex" onClick={this.handleEmailClick.bind(this)}>
 
-          &nbsp;&nbsp;<span className="fa fa-star-o"></span>&nbsp;&nbsp;
-        <h><span className="name">{this.props.email.from}</span></h>
-        <h><span>{this.props.email.subject}</span></h>
+          <div className="col-4">From: {this.props.email.from.split('<')[0]}</div>
+          <div classNamess="col-8">Subject: {this.props.email.subject}</div>
 
-        <span className="ml-auto p-2">
-          <span className="badge badge-default badge-pill">{this.props.email.time}</span>
-        </span>
-      </li>
+          <span className="ml-auto p-2">
+            <span className="badge badge-default badge-pill">{this.props.email.date}</span>
+          </span>
 
-    )
+
+        </li>
+
+      )
+    } else {
+      return (
+        <li className="list-group-item d-flex  list-group-item-info" onClick={this.handleEmailClick.bind(this)}>
+
+          <div className="col-4">From: {this.props.email.from.split('<')[0]}</div>
+          <div classNamess="col-8">Subject: {this.props.email.subject}</div>
+
+          <span className="ml-auto p-2">
+            <span className="badge badge-default badge-pill">{this.props.email.date}</span>
+          </span>
+        </li >
+
+      )
+    }
+
   }
 }
 
@@ -1010,11 +1051,33 @@ class MainContainer extends React.Component {
   }
 
   handleUpdateMe() {
+    // this.emptyEmailArray();
     this.props.onClick();
   }
 
-  synceMailbox() {
+  emptyEmailArray() {
+    this.state.fetchedInbox = false;
+    this.state.fetchedSent = false;
+    var length = this.props.emails.length
+    var count = 0
+    if (length != 0) {
+      for (var mail of this.props.emails) {
+        console.log('legn', length)
+        console.log('pop', mail)
+        this.props.emails.pop();
+        count++
+        if (count == length) {
+          console.log('syncing again')
+          this.props.onClick();
+          this.syncMailbox();
+        }
+      }
+    }
+  }
+
+  syncMailbox() {
     console.log('sync mailbox')
+    //  emptyEmailArray();
     var apiInbox = "http://192.168.112.243:3001/api/mail/showInbox";
     var apiSent = "http://192.168.112.243:3001/api/mail/getSentItems";
 
@@ -1058,7 +1121,7 @@ class MainContainer extends React.Component {
                 for (var mail of responseSent.data) {
                   console.log('adding sent to props', count + 1)
                   mail.labelId = 3;
-
+                  mail.seen = true;
                   mail.mailID = mail.id
                   mail.id = count + 1;
 
@@ -1097,25 +1160,12 @@ class MainContainer extends React.Component {
 
   }
 
-  // componentDidUpdate() {
-  //   console.log('am I being called??????')
-  //   var array = 0;
-  //   var length = this.props.emails.length;
-  //   console.log('1array', array, 'len', length)
-  //   for (var mail of this.props.emails) {
-  //     console.log('2array', array, 'len', length)
-  //     this.props.emails.pop();
-  //     console.log('3array', array, 'len', length)
-  //     array++;
-  //     if (array == length) {
-  //       this.synceMailbox();
-  //     }
-  //   }
-  // }
+  componentWillUpdate() {
 
+  }
 
   componentWillMount() {
-    this.synceMailbox();
+    this.syncMailbox();
   }
 
   static defaultProps = {
@@ -1173,17 +1223,16 @@ class MainContainer extends React.Component {
       console.log('this is state value of mailbox', this.state.selectedLabel)
       var filteredEmails; //= this.props.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
       if (this.state.selectedLabel == 1) {
-        // this.synceMailbox()
         filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == 1);
         console.log('sellect inbox', filteredEmails)
       } else if (this.state.selectedLabel == 3) {
-        // this.synceMailbox()
         filteredEmails = this.props.emails.filter(e => e.labelId & e.labelId == 3);
         console.log('seleeecctt sent', filteredEmails)
       }
 
       if (filteredEmails.length = this.state.mailCount) {
-        content = <EmailList emails={filteredEmails} />;
+        // content = <EmailList emails={filteredEmails} onClick={this.emptyEmailArray.bind(this)} />;
+        content = <EmailList emails={filteredEmails} onClick={this.emptyEmailArray.bind(this)} />;
       } else {
         content = <EmptyBox />;
       }
@@ -1197,7 +1246,9 @@ class MainContainer extends React.Component {
         <hr />
         <div className="row">
           <div className="col-12 col-sm-12 col-md-3 col-lg-2">
-            <MailboxLabels onChangeMailbox={this.handleChangeMailbox.bind(this)} />
+            {/* <MailboxLabels onChangeMailbox={this.handleChangeMailbox.bind(this)} onClick={this.emptyEmailArray.bind(this)} /> */}
+            <MailboxLabels onChangeMailbox={this.handleChangeMailbox.bind(this)}/>
+          
           </div>
           <div className="col-12 col-sm-12 col-md-9 col-lg-10">
             {content}

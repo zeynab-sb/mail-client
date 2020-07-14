@@ -420,7 +420,7 @@ class EmptyBox extends React.Component {
 
 class LoadingBox extends React.Component {
   render() {
-    return (<center><p>Please Be Patient ...</p></center>)
+    return (<center>  <i className="fa fa-refresh" ></i><h5>Please Be Patient</h5>  <i className="fa fa-refresh" ></i></center>)
   }
 }
 
@@ -455,7 +455,7 @@ class MainContainer extends React.Component {
     this.state.fetchedInbox = false;
     this.setState({ fetchedSent: false });
 
-    var length = this.props.emails.length 
+    var length = this.props.emails.length
     console.log('length', length, this.props.emails)
     var count = 0
     if (length != 0) {
@@ -567,7 +567,7 @@ class MainContainer extends React.Component {
       }
 
       if (filteredEmails.length = this.state.mailCount) {
-      content = <EmailList emails={filteredEmails} onClick={this.emptyEmailArray.bind(this)} onSync={this.emptyEmailArray.bind(this)} />;
+        content = <EmailList emails={filteredEmails} onClick={this.emptyEmailArray.bind(this)} onSync={this.emptyEmailArray.bind(this)} />;
       } else {
         content = <EmptyBox />;
       }
@@ -629,7 +629,7 @@ class ComposeMail extends React.Component {
       recipient: [],
       subject: "",
       text: "",
-    }  
+    }
   }
 
   handleLabelClick() {
@@ -702,7 +702,7 @@ class ComposeMail extends React.Component {
                   <p>
                     <p>Text</p>
                     <input type="text" name="text" style={{ width: "390px", height: "90px", fontSize: 15 }} onChange={e => { this.handleText(e.target.value) }} />
-                   
+
                   </p>
                 </p>
               </div>
@@ -755,13 +755,13 @@ class Login extends Component {
         <h3>Étoile Email Manager</h3>
         <div className="form-group">
           <label>Email address</label>
-          <input type="text" className="form-control col-xs-4" placeholder="Enter email"
+          <input type="email" className="form-control col-xs-4" placeholder="Enter email"
             onChange={e => loginInfo.email = e.target.value} />
         </div>
         <div className="form-group">
           <label>Password</label>
 
-          <input type="text" className="form-control" placeholder="Enter password"
+          <input type="password" className="form-control" placeholder="Enter password"
             onChange={e => loginInfo.password = e.target.value} />
         </div>
         <button type="button" className="btn btn-info btn-block more" onClick={event => { this.handleSubmitClick(event) }}>Login</button>

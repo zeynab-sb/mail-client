@@ -1,3 +1,4 @@
+// This is the test class for rederin App Component and see if there's any problems
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';

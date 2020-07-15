@@ -1,9 +1,9 @@
+// In this fil App Component and its child component are defined
 import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
-import SunEditor, { buttonList } from "suneditor-react";
-import 'suneditor/dist/css/suneditor.min.css';
 
+// Login Info is kept as a global variable so that token would be visible in all components.
 
 var loginInfo = {
   email: "",
@@ -11,7 +11,9 @@ var loginInfo = {
   token: "",
 }
 
-
+// This is App Component  which  contains Navigation Bar
+// Below the Navigation Bar we render Login Component or 
+// the MainContainer in which all inboxes and email are. 
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -68,6 +70,8 @@ class App extends React.Component {
   }
 }
 
+// This is Navigation Bar which shows the gray Navigation Bar
+// and use the Bootstrap nav-bar classes.
 class NavigationBar extends React.Component {
   render() {
     return (
@@ -87,6 +91,12 @@ class NavigationBar extends React.Component {
   }
 }
 
+// This is Mailbox Lables which renders the  inbox or sent
+// mailbox at the  left  column and  adds  an  MailboxItem 
+// for each  mailbox  that it  defined  in  this Component
+// in  this  project  we  only  show two mailboxes;  Inbox
+// and sent items.  More  mailboxes such as draft, deleted 
+// and etc can be added by adding them to defaultProps.
 class MailboxLabels extends React.Component {
   constructor(props) {
     super(props);
@@ -156,7 +166,6 @@ class MailboxLabels extends React.Component {
             id={label.id}
             label={label}
             onClick={this.props.onChangeMailbox.bind(this)}
-          // onUpdate={this.props.onClick.bind(this)}
           />
         ))}
       </ul>
@@ -164,11 +173,13 @@ class MailboxLabels extends React.Component {
   }
 }
 
+// This is Mailbox Items which renders a list item in order
+// to show the label for the mailbox.   In case of Inbox, a
+// badge for unread count is added.
 class MailboxItem extends React.Component {
   handleMailboxClick() {
     console.log('handleClick ' + this.props.id);
     this.props.onClick(this.props.id);
-    // this.props.onUpdate()
   }
 
   render() {
@@ -194,6 +205,12 @@ class MailboxItem extends React.Component {
   }
 }
 
+// This  is the  EmailList  Component  in which we show the list
+// of all mail,   and in the case of clicking on and email,   it 
+// handle the clicks, rerender tha Componenet and shows what the
+// email is, handle back button and handles deleting an email. by
+// clicking on each email, and returning to the inbox ot sent the
+// inbox is updated and new mails will appear.
 class EmailList extends React.Component {
   constructor(props) {
     super(props);
@@ -237,7 +254,6 @@ class EmailList extends React.Component {
         console.log('this is response', response.data)
         this.state.deleteClicked = false;
         this.state.clicked = false
-        // this.props.onClick();
         this.props.onSync();
         this.forceUpdate();
         alert("Email Deleted")
@@ -276,8 +292,6 @@ class EmailList extends React.Component {
               console.log('this is response', response.data)
               console.log('this is email', email)
 
-              console.log('this is the whole state', this.state)
-              // this.props.onClick();
               this.forceUpdate();
             }).catch(error => {
               console.log("error", error)
@@ -286,8 +300,6 @@ class EmailList extends React.Component {
         }
       }
     }
-    // this.state.clicked = true;
-    // this.forceUpdate();
   };
 
   render() {
@@ -341,32 +353,19 @@ class EmailList extends React.Component {
           </div>
         </div>
       )
-      // } else {
-      //   return (
-      //     <div>
-      //       <div className="list-group">
-      //         {/* EmailItem creation: */}
-      //         {this.props.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel).map((email) => (
-      //           <EmailItem
-      //             key={email.id}
-      //             email={email}
-      //             handleEmailClick={this.handleEmailClick} />
-      //         ))}
-      //       </div>
-      //     </div>
-      //   )
-      // }
-
     }
   }
 }
 
+// This is the Email Items which are shown blue in case the
+// email is unread and white when it is read.
+// Also, based on Sent emails or inbox email are shown, the
+//  lables are different.
 class EmailItem extends React.Component {
   handleEmailClick(event) {
     event.target.setAttribute("disabled", true);
 
     this.props.handleEmailClick(this.props.email.id);
-    // this.forceUpdate();
   }
 
   render() {
@@ -406,25 +405,27 @@ class EmailItem extends React.Component {
   }
 }
 
+// This is an Emptybox in case an inbox is empty
 class EmptyBox extends React.Component {
   render() {
-    var html = `<h1 style="font-family:verdana;">This is a heading</h1>
-    <p style="font-family:courier;">This is a paragraph.</p>`
-    // var html = 'hello'
     console.log('state', this.props)
     return (
-      <td dangerouslySetInnerHTML={{ __html: html }} />
-
+      <center><p>No Emails</p></center>
     )
   }
 }
 
+// This is Loading box which we render when the mailboxes are syncing.
 class LoadingBox extends React.Component {
   render() {
     return (<center>  <i className="fa fa-refresh" ></i><h5>Please Be Patient</h5>  <i className="fa fa-refresh" ></i></center>)
   }
 }
 
+// This is the MainContainer.
+// In this class,  we fetch all email,  onSync() will sync the email
+// based on  the  latest  update  and based  on the selectedLabel we
+// filter emails as inbox or sent and pass them to Email List Class.
 class MainContainer extends React.Component {
 
   constructor(props) {
@@ -443,12 +444,9 @@ class MainContainer extends React.Component {
   handleChangeMailbox(labelId) {
     console.log('Label clicked: ' + labelId);
     this.setState({ selectedLabel: labelId });
-    // this.state.selectedLabel = labelId;
-
   }
 
   handleUpdateMe() {
-    // this.emptyEmailArray();
     this.props.onClick();
   }
 
@@ -596,6 +594,8 @@ class MainContainer extends React.Component {
   }
 }
 
+// This class shows the sync button and handle onClick from its parent
+// class which is MainContainer
 class SyncMail extends React.Component {
 
   constructor(props) {
@@ -621,6 +621,8 @@ class SyncMail extends React.Component {
 
 }
 
+// This class shows the Compose button and handle onClick from its parent
+// class which is MainContainer
 class ComposeMail extends React.Component {
 
   constructor(props) {
@@ -735,6 +737,8 @@ class ComposeMail extends React.Component {
   }
 }
 
+// This class shows the Login Page and handle onClick from its parent
+// class which is App
 class Login extends Component {
   constructor(props) {
     super(props);

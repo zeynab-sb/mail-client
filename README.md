@@ -2,7 +2,7 @@
 This is a Mail Client written in Node.js for Back-end using express and React.js for Front-end. 
 
 ### Features
-- Login in your Gmail or Yahoo Mail accout
+- Login in your Email account
 - Fetch all you Inbox Items and Sent Items
 - Compose Mail
 - Sync and fetch new email, at any time

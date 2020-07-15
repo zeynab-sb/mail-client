@@ -1,16 +1,16 @@
+// This is the controller class in which API methods has been defined. 
+// We use IMAP (Internet Message Access Protocol) to connect to the mailbox
+
 const imaps = require('imap-simple');
 const TokenController = require('../controller/tokenController');
 const nodemailer = require('nodemailer');
 module.exports = new class mailController {
     constructor() {
-        this.models = {
-
-        }
+        this.models = {}
     }
 
-
-
-    // this api get user info and login
+    // This API gets email and password in the request body and login 
+    // Token is created and hanndled by calling the TokenController method, CreateToken 
     async login(req, res) {
         var config
         if (req.body.email.includes("gmail")) {
@@ -81,7 +81,7 @@ module.exports = new class mailController {
         }
     }
 
-    //this api shows the inbox of a user
+    // This API use the token to find the user's email address, and fetch the emails in inbox
     async showInbox(req, res) {
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
@@ -114,7 +114,7 @@ module.exports = new class mailController {
                                         from: results[j].parts[1].body.from[0],
                                         to: results[j].parts[1].body.to,
                                         subject: results[j].parts[1].body.subject[0],
-                                        date: results[j].parts[1].body.date[0].slice(0,25),
+                                        date: results[j].parts[1].body.date[0].slice(0, 25),
                                         seen: seenStatus,
                                         text: (results[j].parts[0].body),
                                     }
@@ -147,7 +147,7 @@ module.exports = new class mailController {
 
     }
 
-    //this api sends email
+    // This API use the token to find the user's email address, and send an email
     async sendEmail(req, res) {
 
         if (req.headers['authorization']) {
@@ -181,7 +181,7 @@ module.exports = new class mailController {
 
     }
 
-    //this api gets sent items
+    // This API use the token to find the user's email address, and fetch all sent items
     async getSentItems(req, res) {
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
@@ -210,7 +210,7 @@ module.exports = new class mailController {
                                         from: results[j].parts[2].body.from[0],
                                         to: results[j].parts[2].body.to,
                                         subject: results[j].parts[2].body.subject[0],
-                                        date: results[j].parts[2].body.date[0].slice(0,25),
+                                        date: results[j].parts[2].body.date[0].slice(0, 25),
                                         text: (results[j].parts[1].body),
                                     }
                                     emails.push(email)
@@ -239,7 +239,8 @@ module.exports = new class mailController {
     }
 
 
-    //this api marks unseen email as seen
+    // This API use the token to find the user's email address,
+    // gets an email id in request body, and mark that specific email as read
     async markUnseenAsSeen(req, res) {
 
         if (req.headers['authorization']) {
@@ -271,7 +272,8 @@ module.exports = new class mailController {
         }
     }
 
-    //this api deletes an email
+    // This API use the token to find the user's email address,
+    // gets an email id in request body, and delete that specific email
     async deleteEmail(req, res) {
         if (req.headers['authorization']) {
             const bearerHeader = req.headers['authorization']
@@ -305,7 +307,7 @@ module.exports = new class mailController {
         }
     }
 
-
+    // This API use the token to find the user's email address, and fetch all deleted items
     async getAllDeletedItems(req, res) {
 
         if (req.headers['authorization']) {
@@ -363,7 +365,7 @@ module.exports = new class mailController {
 
     }
 
-    //this api gets number of unseen emails
+    // This API use the token to find the user's email address, and returns the number of unread emails
     async numberOfUnseen(req, res) {
 
         if (req.headers['authorization']) {

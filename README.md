@@ -1,5 +1,5 @@
 # Mail Client in Node.js and React.js
-This is a Mail Client written in Node.js for Back-end using express and React.js for Front-end. We user IMAP (Internet Message Access Protocol) to connect to your email accout.
+This is a Mail Client written in Node.js for Back-end using express and React.js for Front-end. We use IMAP (Internet Message Access Protocol) to connect to your mail accout.
 In case you want to use our app, you need to set your account security setting to low to allow connections from unknows apps. 
 
 ### Features

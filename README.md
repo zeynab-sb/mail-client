@@ -10,6 +10,8 @@ This is a Mail Client written in Node.js for Back-end using express and React.js
 
 #### How to Run?
 1. Setup a redis-server for handling tokens.
-2. Run `node server.js` in the root of the project for running Back-end.
-3. Run `npm start` in view\inbox for Front-end.
-4. Login in our mail Client and Enjoy!!!
+2. Run `npm install` in the root of the project for downloading Back-end libraries.
+3. Run `node server.js` in the root of the project for running Back-end.
+4. Run `npm install` in  view\inbox for Front-end for downloading Front-end libraries.
+5. Run `npm start` in view\inbox for Front-end.
+6. Login in our mail Client and Enjoy!!!

@@ -1,4 +1,4 @@
-//this file contains config for redis and server
+//this file contains config for redis and server.
 const path = require("path")
 
     let configJson = {
@@ -12,7 +12,6 @@ const path = require("path")
             {
                 secretkey:"secret-key"
             },       
-//        redis : "192.168.97.194",
        redis : "localhost",
 
 redis_port: 6379       

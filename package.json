@@ -33,7 +33,7 @@
     "jsdom": "^16.2.2",
     "njwt": "^1.0.0",
     "node-html-parser": "^1.2.20",
-    "nodemailer": "^6.4.10",
+    "nodemailer": "^6.4.16",
     "redis": "^3.0.2",
     "suneditor-react": "^2.12.5",
     "textversionjs": "^1.1.3",
